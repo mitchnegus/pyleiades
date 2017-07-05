@@ -4,7 +4,7 @@
 
 ###### A tool for creating visuals from historical energy data (e.g. the EIA monthly energy review).
  
-This tool is designed to provide insightful and aesthetic visualizations of the Energy Information Administration (EIA) energy consumption dataset. The dataset contains information about the sources of energy Americans have relied on for (electrical?) power since the middle of the 20$^{\text{th}}$ century. The dataset begins in 1949 with annual energy consumption values, and extends up until February 2017 where more recent energy consumption quantities are recorded monthly.
+This tool is designed to provide insightful, aesthetic and more flexible visualizations of the Energy Information Administration (EIA) monthly energy review datasets. The datasets contain information about the sources of energy Americans have relied on for power since the middle of the 20$^{\text{th}}$ century. The datasets begin in 1949 with annual energy production, consumption, import, and export values, and extend up until the present. Monthly energy datapoints are reported starting in 1973.
 
 The basic energy sources are reported in the following groups:  
 
@@ -23,6 +23,8 @@ The basic energy sources are reported in the following groups:
 ###### Nuclear
 * Fission
 
-All consumption values are reported in units of quadrillion btus. ($10^{15}$btu)
+The data is published monthly on the [EIA's website](https://www.eia.gov/totalenergy/data/monthly/), and as of July 5th, 2017 records were provided up through March 2017.
+
+All reported values are in units of quadrillion btus ($10^{15}$btu). Be aware that the datasets may provide [more precision](https://www.eia.gov/totalenergy/data/monthly/dataunits.php) than was published in the PDF reports.
 
 --------------------------------------------------------------
