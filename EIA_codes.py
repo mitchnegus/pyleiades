@@ -1,4 +1,11 @@
-"""DOCSTRING comment"""
+"""
+Provide utilities for working with EIA dataset codes.
+
+Functions
+---------
+name_to_code
+    Converts energy names into EIA energy codes
+"""
 
 def name_to_code(name):
     """
