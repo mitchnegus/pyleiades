@@ -36,8 +36,8 @@ def name_to_code(name):
               'primary':12}
         
     if key_name not in Ecodes:
-        raise KeyError('"%s" was not found in the EIA dataset; \
-                        see documentation for implemented energy sources')
+        raise KeyError('{} was not found in the EIA dataset; \
+                        see documentation for implemented energy sources'.format(keyname))
     else:
         code = Ecodes[key_name]
     return code
