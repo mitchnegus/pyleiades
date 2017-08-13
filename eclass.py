@@ -1,4 +1,5 @@
 import numpy as np
+from load_data import load_dataset
 from eia_codes import name_to_code, date_to_code
 
 
@@ -12,7 +13,7 @@ class EClass:
     which more than a certain amount of energy was consumed from that source.
     """
     
-    def __init__(self,energy_source,dataset):
+    def __init__(self,energy_source,dataset=None):
         """
         Receive energy source (as numeric code) and collect corresponding data from the input dataset
         
@@ -22,8 +23,12 @@ class EClass:
             The energy source to be pulled from the dataset.
         dataset : array_like, optional
             The dataset from which to pull information. Must be three ordered columns
-            –date, energy quantity, energy code–with no headings.
+            –date, energy quantity, and energy code–with no headings. If omitted, use the
+            default dataset.
         """
+        # Use default dataset if dataset argument is omitted
+        if dataset == None:
+            dataset = load_dataset()
         # Determine Ecode from energy source name
         Ecode = name_to_code(energy_source)
 
