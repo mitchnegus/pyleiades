@@ -1,6 +1,6 @@
 import numpy as np
-from eia_codes import name_to_code
-from eia_codes import date_to_code
+from eia_codes import name_to_code, date_to_code
+
 
 class EClass:
     
@@ -56,7 +56,7 @@ class EClass:
         return bounded_data
         
      
-    def totals(self,start_date=None,end_date=None,freq='yearly'):
+    def totals(self,freq='yearly',start_date=None,end_date=None,):
         """
         Get the energy consumption totals over a given period.
         
