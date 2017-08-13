@@ -1,3 +1,5 @@
+.gitignore
+.ipynb_checkpoints
 *.xls*
 
 # Byte-compiled / optimized / DLL files
