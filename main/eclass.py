@@ -29,7 +29,8 @@ class EClass:
         # Use default dataset if dataset argument is omitted
         if dataset == None:
             dataset = load_dataset()
-        # Determine Ecode from energy source name
+       
+         # Determine Ecode from energy source name
         Ecode = name_to_code(energy_source)
 
         # Eliminate 'nan' data from source
@@ -37,7 +38,7 @@ class EClass:
         
         # Isolate this energy's data from source, and remove (now superfluous) Ecode
         self.data = dataset[dataset[:,2]==Ecode,:2]
-                
+        
         # Get the oldest and newest datapoint dates for this energy" 
         self.idate = int(min(self.data[:,0]))
         self.fdate = int(max(self.data[:,0]))

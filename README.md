@@ -28,3 +28,7 @@ The data is published monthly on the [EIA's website](https://www.eia.gov/totalen
 All reported values are in units of quadrillion british thermal units (1.0E15 btu). Be aware that the datasets may provide [more precision](https://www.eia.gov/totalenergy/data/monthly/dataunits.php) than is published in the PDF reports.
 
 --------------------------------------------------------------
+
+Outside dependencies are numpy and glob.
+
+--------------------------------------------------------------
