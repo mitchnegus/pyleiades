@@ -1,5 +1,5 @@
 """
-Load EIA Monthly Energy Review (MER) datasets.
+Utilities for loading EIA Monthly Energy Review (MER) datasets.
 
 Functions
 ---------

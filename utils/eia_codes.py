@@ -1,5 +1,5 @@
 """
-Provide utilities for working with EIA dataset codes.
+Utilities for converting user inputs into EIA dataset codes.
 
 Functions
 ---------
