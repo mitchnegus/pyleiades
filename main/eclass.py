@@ -13,7 +13,7 @@ class EClass:
     which more than a certain amount of energy was consumed from that source.
     """
     
-    def __init__(self,energy_source,dataset=None):
+    def __init__(self,energy_source,dataset=np.empty(0)):
         """
         Receive energy source (as numeric code) and collect corresponding data from the input dataset
         
@@ -27,7 +27,7 @@ class EClass:
             default dataset.
         """
         # Use default dataset if dataset argument is omitted
-        if dataset == None:
+        if np.size(dataset) == 0:
             dataset = load_dataset()
        
          # Determine Ecode from energy source name
