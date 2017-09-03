@@ -31,7 +31,7 @@ class TestEClass:
         EC = EClass('nuclear',testdata)
         assert EC.fdate == 195101
      
-    def test_daterange_BoundingDates(self):
+    def test_daterange_BoundingInputDates(self):
         testdata = np.array([[195010,1,5],
                              [195011,2,5],
                              [195012,2,5],
@@ -48,6 +48,18 @@ class TestEClass:
                                 float)
         EC = EClass('nuclear',testdata)
         assert np.array_equal(EC.daterange(195011,195102),boundedmonths)
+    
+    def test_daterange_BoundingDefaultDates(self):
+        testdata = np.array([[195010,1,5],
+                             [195011,2,5],
+                             [195012,2,5],
+                             [195013,7,5],
+                             [195101,2,5],
+                             [195102,1,5],
+                             [195103,1,5]],
+                            float)
+        EC = EClass('nuclear',testdata)
+        assert np.array_equal(EC.daterange(None,None),testdata[:,0:2])
       
     def test_totals_FindingMonthlyTotals(self):
         testdata = np.array([[195013,2,5],
