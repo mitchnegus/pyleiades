@@ -57,6 +57,11 @@ class EClass:
         bound_data : ndarray
             A 2 column array corresponding to the specified range.
         """
+        # Use dataset default dates unless otherwise specified by the user
+        start_date = self.idate if start_date == None else date_to_code(str(start_date))
+        end_date = self.fdate if end_date == None else date_to_code(str(end_date))
+       
+        # Adjust dataset boundaries 
         half_bounded_data = self.data[self.data[:,0] >= start_date]
         bounded_data = half_bounded_data[half_bounded_data[:,0] <= end_date]
         return bounded_data
@@ -68,21 +73,20 @@ class EClass:
         
         Parameters
         ----------
+        freq : str
+            The frequency for gathering totals ('monthly','yearly',or 'cumulative').
         start_date, end_date : str
             The user specified dataset starting and ending dates (both inclusive); 
             acceptable formats are 'YYYYMM', 'YYYY-MM', or 'MM-YYYY'. Dashes ("-") can 
             be substituted for periods ("."), underscores ("_"), or forward slashes ("/").
-        freq : str
-            The frequency for gathering totals ('monthly','yearly',or 'cumulative').
             
         Returns
         -------
         totals_array : ndarray
             A 2 column array giving dates at the given frequency and corresponding totals.
         """
-        start_date = self.idate if start_date == None else date_to_code(str(start_date))
-        end_date = self.fdate if end_date == None else date_to_code(str(end_date))
-        
+        freq = freq.lower()
+
         # Bound data by start and end dates
         totals_data = self.daterange(start_date,end_date)
         
@@ -108,7 +112,7 @@ class EClass:
         totals_array = totals_data
         return totals_array
         
-    #def extrema(self,extremum,start_date,end_date,interval):
+    def extrema(self,extremum,freq,start_date,end_date):
         """
         Get the maximum/minimum energy ever consumed over a given interval.
         
@@ -116,13 +120,14 @@ class EClass:
         ----------
         extremum : str
             The exteme value to be found ('max' or 'min).
+        freq : str
+            The frequency for checking extrema ('monthly' or 'yearly').
         start_date, end_date : str
-            The user specified dataset starting/ending points; 
-            acceptable formats are 'YYYYMMDD', 'YYYY-MM-DD', MM-DD-YYYY', or 'MM/DD/YYYY'.
-        interval : str
-            The time intervals considered for extrema comparison ('yearly' or 'monthly').
+            The user specified dataset starting and ending dates (both inclusive); 
+            acceptable formats are 'YYYYMM', 'YYYY-MM', or 'MM-YYYY'. Dashes ("-") can 
+            be substituted for periods ("."), underscores ("_"), or forward slashes ("/").
         """
-
+        extremum = extremum.lower()[:3]
 
         
     #def more_than(self,amount,start_date,end_date,interval):
