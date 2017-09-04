@@ -20,12 +20,12 @@ class EClass:
         
         Parameters
         ----------
-        Ecode : int
+        energy_source : str
             The energy source to be pulled from the dataset.
         dataset : array_like, optional
-            The dataset from which to pull information. Must be three ordered columns
-            –date, energy quantity, and energy code–with no headings. If omitted, use the
-            default dataset.
+            The dataset from which to pull information. Must be three ordered
+            columns–date, energy quantity, and energy code–with no headings.
+            If omitted, use the default dataset.
         """
         # Use default dataset if dataset argument is omitted
         if np.size(dataset) == 0:
@@ -37,15 +37,15 @@ class EClass:
         # Eliminate 'nan' data from source
         dataset = dataset[np.logical_not(np.isnan(dataset[:,1]))]
         
-        # Isolate this energy's data from source, and remove (now superfluous) Ecode
+        # Isolate this energy's data from source and remove the Ecode column
         self.data = dataset[dataset[:,2]==Ecode,:2]
         
         # Get the oldest and newest datapoint dates for this energy" 
         self.idate = int(min(self.data[:,0]))
         self.fdate = int(max(self.data[:,0]))
         
-        self.freq_errmsg = '"{}" is not a frequency compatible with this dataset; see documentation for permissible frequencies.' 
-        self.extr_errmsg = '"{}" is not a recognized input for an extrema; try "max" or "min"' 
+        self.freq_errmsg = 'Frequency "{}" is not compatible with this dataset; see documentation for permissible frequencies.' 
+        self.extr_errmsg = 'Input "{}" is not recognized as an extrema; try "max" or "min"' 
 
     def _daterange(self,start_date,end_date):
         """
@@ -62,8 +62,10 @@ class EClass:
             A 2 column array corresponding to the specified date range.
         """
         # Use dataset default dates unless otherwise specified by the user
-        start_date = self.idate if start_date == None else date_to_code(str(start_date))
-        end_date = self.fdate if end_date == None else date_to_code(str(end_date))
+        if start_date == None: start_date = self.idate
+        else: date_to_code(str(start_date))
+        if end_date == None: end_date = self.fdate
+        else: date_to_code(str(end_date))
        
         # Adjust dataset boundaries 
         half_bounded_data = self.data[self.data[:,0] >= start_date]
@@ -77,15 +79,16 @@ class EClass:
         Parameters
         ----------
         data : ndarray
-            A 2 column array with data to be filtered according to monthly totals.
+            A 2 column array with data to be filtered by month.
 
         Returns
         -------
         monthly_data : ndarray
-            A 2 column array corresponding to only the monthly totals.
+            A 2 column array with data filtered into monthly intervals.
         """
-        # Remove dates where the fifth and sixth digits of the date code are not in 01-12
-        month_codes = np.array([int(float(str(date_code)[4:6])) for date_code in data[:,0]])
+        # Remove dates where "date code" digits 5 and 6 are not 01-12
+        month_codes = [int(float(str(code)[4:6])) for code in data[:,0]] 
+        month_codes = np.array(month_codes)
         monthly_data = data[month_codes!=13]
         return monthly_data
      
@@ -96,15 +99,16 @@ class EClass:
         Parameters
         ----------
         data : ndarray
-            A 2 column array with data to be filtered according to yearly totals.
+            A 2 column array with data to be filtered by year.
 
         Returns
         -------
         yearly_data : ndarray
             A 2 column array corresponding to only the yearly totals.
         """
-        # Remove dates where the fifth and sixth digits of the date code are not 13 (denoting yearly total)
-        month_codes = np.array([int(float(str(date_code)[4:6])) for date_code in data[:,0]])
+        # Remove dates where "date code" digits 5 and 6 are not 13
+        month_codes = [int(float(str(code)[4:6])) for code in data[:,0]] 
+        month_codes = np.array(month_codes)
         yearly_data = data[month_codes==13]
         return yearly_data
        
@@ -115,16 +119,19 @@ class EClass:
         Parameters
         ----------
         freq : str
-            The frequency for gathering totals ('monthly','yearly',or 'cumulative').
+            The frequency for gathering totals ('monthly','yearly',or
+            'cumulative').
         start_date, end_date : str
-            The user specified dataset starting and ending dates (both inclusive); 
-            acceptable formats are 'YYYYMM', 'YYYY-MM', or 'MM-YYYY'. Dashes ("-") can 
-            be substituted for periods ("."), underscores ("_"), or forward slashes ("/").
+            The user specified starting and ending dates for the dataset 
+            (both inclusive); acceptable formats are 'YYYYMM', 'YYYY-MM',
+            or 'MM-YYYY'. Dashes can be substituted for periods, underscores,
+            or forward slashes.
             
         Returns
         -------
         totals_array : ndarray
-            A 2 column array giving dates at the given frequency and corresponding totals.
+            A 2 column array giving energy totals for a series of dates in
+            the given interval and at the given frequency.
         """
         freq = freq.lower()
 
@@ -138,13 +145,15 @@ class EClass:
             totals_data = self._yearlydata(totals_data)
         elif freq == 'cumulative':
             # Create a numpy array (1x2) of the energy source's cumulative total
-            month_codes = np.array([int(float(str(date_code)[4:6])) for date_code in totals_data[:,0]])
+            month_codes = [int(float(str(code)[4:6])) for code in data[:,0]] 
+            month_codes = np.array(month_codes)
             date_indices_to_sum = (month_codes == 13)
             for i in range(len(date_indices_to_sum)):
                 if date_indices_to_sum[-i-1] == False:
                     date_indices_to_sum[-i-1] = True
                 else: break
-            totals_data = np.array([np.sum(self.data[date_indices_to_sum],axis=0)])
+            totals_data = [np.sum(self.data[date_indices_to_sum],axis=0)]
+            totals_data = np.array(totals_data)
             totals_data[-1,0] = self.data[-1,0]
         else:
             raise ValueError(self.freq_errmsg.format(freq))
@@ -162,15 +171,16 @@ class EClass:
         freq : str
             The frequency for checking extrema ('monthly' or 'yearly').
         start_date, end_date : str
-            The user specified dataset starting and ending dates (both inclusive); 
-            acceptable formats are 'YYYYMM', 'YYYY-MM', or 'MM-YYYY'. Dashes ("-") can 
-            be substituted for periods ("."), underscores ("_"), or forward slashes ("/").
+            The user specified starting and ending dates for the dataset 
+            (both inclusive); acceptable formats are 'YYYYMM', 'YYYY-MM',
+             or 'MM-YYYY'. Dashes can be substituted for periods, underscores,
+             or forward slashes.
         
         Returns
         -------
         extremum_array : ndarray
-            A 1x2 array giving the extremum values specified (column 2) and the date of
-            occurrence for that value (column 1).
+            A 1x2 array giving the extremum values specified (column 2) and the
+            date of occurrence for that value (column 1).
         """
         # Bound data by start and end dates
         extrema_data = self._daterange(start_date,end_date)
@@ -186,11 +196,12 @@ class EClass:
         # Select max or min
         extremum = extremum.lower()[:3]
         if extremum == 'max':
-            extremum_array = np.array([extremum_data[np.argmax(extremum_data[:,1])]])
+            extremum_array = [extremum_data[np.argmax(extremum_data[:,1])]]
         elif extremum == 'min':
-            extremum_array = np.array([extremum_data[np.argmin(extremum_data[:,1])]])
+            extremum_array = [extremum_data[np.argmin(extremum_data[:,1])]]
         else:
             raise ValueError(self.extr_errmsg.format(extremum))
+        extremum_array = np.array(extremum_array)
         return extremum_array
 
     #def more_than(self,amount,start_date,end_date,interval):
