@@ -11,6 +11,7 @@ class EClass:
     Retrieves data from the specified energy source according to specific 
     attributes, such as energy consumed per decade, per year, or all years in 
     which more than a certain amount of energy was consumed from that source.
+    Use this class to extract and return pure data from the dataset.
     """
     
     def __init__(self,energy_source,dataset=np.empty(0)):
@@ -83,7 +84,7 @@ class EClass:
         monthly_data : ndarray
             A 2 column array corresponding to only the monthly totals.
         """
-	# Remove dates where the last two digits of the date code are not in 01-12
+        # Remove dates where the fifth and sixth digits of the date code are not in 01-12
         month_codes = np.array([int(float(str(date_code)[4:6])) for date_code in data[:,0]])
         monthly_data = data[month_codes!=13]
         return monthly_data
@@ -102,7 +103,7 @@ class EClass:
         yearly_data : ndarray
             A 2 column array corresponding to only the yearly totals.
         """
-	# Remove dates where the fifth and sixth digits of the date code are not 13 (denoting yearly total)
+        # Remove dates where the fifth and sixth digits of the date code are not 13 (denoting yearly total)
         month_codes = np.array([int(float(str(date_code)[4:6])) for date_code in data[:,0]])
         yearly_data = data[month_codes==13]
         return yearly_data
