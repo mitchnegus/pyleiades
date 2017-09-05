@@ -9,4 +9,17 @@ class VClass:
     include histograms, line graphs, pie charts, and animations.   
     """
     
-    def __init__(self,*energies):
+    def __init__(self,dataset=np.empty(0)):
+        """
+        Receive energy source(s) and assemble the appropriate class(es).
+        
+        Parameters
+        ----------
+        dataset : array_like, optional
+            The dataset from which to pull information. Must be three ordered
+            columns–date, energy quantity, and energy code–with no headings.
+            If omitted, use the default dataset.
+        """
+
+    def include_energy(self,*energies):
+        pass
