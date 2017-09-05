@@ -21,11 +21,11 @@ def load_dataset(dataset_date='default',dataset_type=None):
     Parameters
     ----------
     dataset_date : str
-        The date identifier of the dataset; 'default' and 'newest' are current options
-        (specific dataset dates to be added).
+        The date identifier of the dataset; 'default' and 'newest' are current
+        options (specific dataset dates to be added).
     dataset_type : str
-        The type of dataset to be selected; can be either 'production', 'consumption', 
-        'import', or 'export' (set as None for default dataset) 
+        The type of dataset to be selected; can be either 'production', 
+        'consumption', 'import', or 'export' (set as None for default dataset) 
     
     Returns
     -------
@@ -39,7 +39,9 @@ def load_dataset(dataset_date='default',dataset_type=None):
     else: raise ValueError('"Default" is the only dataset date identifier currently implemented.')
 
     # Process the dataset to allow conversion to float
-    data_string_array = np.genfromtxt(EIA_MER_DATA_PATH+EIA_MER_DATA_FILE,dtype=str,delimiter=',')[1:,1:4]
+    FULL_PATH = EIA_MER_DATA_PATH+EIA_MER_DATA_FILE
+    data_string_array = np.genfromtxt(FULL_PATH,dtype=str,delimiter=',')
+    data_string_array = data_string_array[1:,1:4]
     data_string_array = np.char.replace(data_string_array,'"','')
     data_string_array = np.char.replace(data_string_array,'Not Available','nan')
     data_float_array = data_string_array.astype(float)
@@ -66,7 +68,10 @@ def get_newest(dataset_type):
     str
         The filename of the most recently downloaded dataset.
     """
-    labeldict = {'production':'prod', 'consumption':'cons', 'import':'imp', 'export':'exp'}
+    labeldict = {'production':'prod',
+                 'consumption':'cons',
+                 'import':'imp',
+                 'export':'exp'}
     label = labeldict[dataset_type]
 
     directories = [directory.split('/')[1] for directory in glob('data/*/')]

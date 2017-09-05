@@ -53,7 +53,7 @@ def date_to_code(date):
     ----------
     date : str
         A date, given in the format 'YYYYMM', 'YYYY-MM', or 'MM-YYYY'. 
-        Dashes ("-") can be substituted for periods ("."), underscores ("_"), or forward slashes ("/").
+        Dashes can be substituted for periods, underscores, or forward slashes.
         
     Returns
     -------
