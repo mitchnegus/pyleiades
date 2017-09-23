@@ -1,6 +1,6 @@
 # *pyleiades*
 
-## Python Library for Energy Information Administration Data Examination and Exhibition
+## Python Library for EIA Data Examination & Exhibition
 
 ###### A tool for creating visuals from historical energy data (e.g. the EIA monthly energy review).
  
