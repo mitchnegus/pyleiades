@@ -1,6 +1,6 @@
-# *enviro*
+# *pyleiades*
 
-## Energy data Visualization Routine
+## Python Library for Energy Information Administration Data Examination and Exhibition
 
 ###### A tool for creating visuals from historical energy data (e.g. the EIA monthly energy review).
  
@@ -32,3 +32,4 @@ All reported values are in units of quadrillion british thermal units (1.0E15 bt
 Outside dependencies are numpy and glob.
 
 --------------------------------------------------------------
+a
