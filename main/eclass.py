@@ -116,6 +116,11 @@ class EClass:
         """
         Get the energy consumption totals over a given period.
         
+        * Note: the 'cumulative' option includes the entire year of the
+                `start_date` specified (i.e. if `start_date` = '201508;, the
+                cumulative sum will account for the entirety of 2015,
+                including all months before August.
+
         Parameters
         ----------
         freq : str
@@ -145,16 +150,18 @@ class EClass:
             totals_data = self._yearlydata(totals_data)
         elif freq == 'cumulative':
             # Create a numpy array (1x2) of the energy source's cumulative total
-            month_codes = [int(float(str(code)[4:6])) for code in data[:,0]] 
+            month_codes = [int(float(str(code)[4:6])) for code in totals_data[:,0]] 
             month_codes = np.array(month_codes)
             date_indices_to_sum = (month_codes == 13)
+            # Add dates from last reported year through given end date
             for i in range(len(date_indices_to_sum)):
                 if date_indices_to_sum[-i-1] == False:
                     date_indices_to_sum[-i-1] = True
                 else: break
-            totals_data = [np.sum(self.data[date_indices_to_sum],axis=0)]
-            totals_data = np.array(totals_data)
-            totals_data[-1,0] = self.data[-1,0]
+            cum_sum = np.sum(totals_data[date_indices_to_sum,1],axis=0)
+            # Use the last date considered for the date
+            totals_data = np.array([[totals_data[-1,0],cum_sum]])
+            print(totals_data)
         else:
             raise ValueError(self.freq_errmsg.format(freq))
         totals_array = totals_data
