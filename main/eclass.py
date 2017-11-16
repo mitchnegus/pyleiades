@@ -16,7 +16,7 @@ class EClass:
     
     def __init__(self,energy_source,dataset=np.empty(0)):
         """
-        Receive energy source (as numeric code) and collect corresponding data.
+        Receive energy source and collect corresponding data.
         
         Parameters
         ----------
