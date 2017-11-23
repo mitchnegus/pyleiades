@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from utils.load_data import load_dataset
 from utils.eia_codes import name_to_code, date_to_code
 
@@ -14,7 +15,7 @@ class EClass:
     Use this class to extract and return pure data from the dataset.
     """
     
-    def __init__(self,energy_source,dataset=np.empty(0)):
+    def __init__(self,energy_source,dataset=pd.DataFrame()):
         """
         Receive energy source and collect corresponding data.
         
@@ -27,22 +28,27 @@ class EClass:
             columns–date, energy quantity, and energy code–with no headings.
             If omitted, use the default dataset.
         """
-        # Use default dataset if dataset argument is omitted
-        if np.size(dataset) == 0:
-            dataset = load_dataset()
-       
-         # Determine Ecode from energy source name
+        # Determine Ecode from energy source name
         Ecode = name_to_code(energy_source)
 
-        # Eliminate 'nan' data from source
-        dataset = dataset[np.logical_not(np.isnan(dataset[:,1]))]
-        
+        # Use default dataset if dataset argument is omitted
+        if dataset.empty:
+            dataset = load_dataset()
+       
         # Isolate this energy's data from source and remove the Ecode column
-        self.data = dataset[dataset[:,2]==Ecode,:2]
+        energy_dataset = dataset[dataset.Ecode == Ecode]
+        self.data = energy_dataset[['Date','Value']]
+
+        # Eliminate 'nan' data 
+        self.data.dropna(inplace=True)
         
+        # Separate the data into monthly and yearly sets for this energy
+        self.monthly_data = self.data[self.data.Date.str[-2:]!=13]
+        self.yearly_data = self.data[self.data.Date.str[-2:]==13]
+
         # Get the oldest and newest datapoint dates for this energy" 
-        self.idate = int(min(self.data[:,0]))
-        self.fdate = int(max(self.data[:,0]))
+        self.idate = self.data.Date.min()
+        self.fdate = self.data.Date.max()
         
         self.freq_errmsg = 'Frequency "{}" is not compatible with this dataset; see documentation for permissible frequencies.' 
         self.extr_errmsg = 'Input "{}" is not recognized as an extrema; try "max" or "min"' 
