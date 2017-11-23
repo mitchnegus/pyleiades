@@ -213,7 +213,7 @@ class EClass:
 
     #def more_than(self,amount,start_date,end_date,interval):
         """
-        Get data for time interval where more than the given amount of energy was consumed.
+        Get data for time intervals where more than the given amount of energy was consumed.
         
         Parameters
         ----------
