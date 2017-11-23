@@ -45,7 +45,7 @@ def load_dataset(dataset_date='default',dataset_type=None):
     FULL_PATH = EIA_MER_DATA_PATH+EIA_MER_DATA_FILE
     data_df = pd.read_csv(FULL_PATH,na_values='Not Available')
     data_df = data_df[['YYYYMM','Value','Column_Order']]
-    data_df = data_df.rename(index=str,columns={'YYYYMM':'Date','Value':'Value [QBTU]','Column_Order':'ECode'})
+    data_df = data_df.rename(index=str,columns={'YYYYMM':'Date','Column_Order':'ECode'})
     return data_df
 
 def get_default():
