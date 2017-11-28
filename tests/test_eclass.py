@@ -1,20 +1,25 @@
+import pandas as pd
 import numpy as np
 from main.eclass import EClass
 
 
 class TestEClass:
      
-    def test_Preprocessing(self):
-        testdata = np.array([[195001,1,5],
-                             [195101,None,5],
-                             [195201,1,5],
-                             [195201,1,6]],
-                            float)
-        # eliminate nan, isolate energy, remove ecode column
-        preprocdata = np.array([[195001,1],
-                                [195201,1]],
-                               float)
-        EC = EClass('nuclear',testdata)
+    def test_MonthlyData(self):
+        monthlydata = pd.DataFrame({'Date':'197301','Value':0.1},
+                                   {'Date':'197302','Value':0.1},
+                                   {'Date':'197303','Value':0.1},
+                                   {'Date':'197304','Value':0.1},
+                                   {'Date':'197305','Value':0.1},
+                                   {'Date':'197306','Value':0.1},
+                                   {'Date':'197307','Value':0.1},
+                                   {'Date':'197308','Value':0.1},
+                                   {'Date':'197309','Value':0.1},
+                                   {'Date':'197310','Value':0.2},
+                                   {'Date':'197311','Value':0.1},
+                                   {'Date':'197312','Value':0.1},)
+        monthlydata = monthlydata.set_index('Date_code')
+        EC = EClass('nuclear',data_date='test')
         assert np.array_equal(EC.data,preprocdata)
 
     def test_FindingInitialDate(self):
