@@ -4,5 +4,4 @@ python:
 install:
         - pip install pytest
 script:
-        - pytest test_eia_codes.py
-        - pytest test_eclass.py
+        - pytest
