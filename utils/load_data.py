@@ -27,7 +27,7 @@ def load_dataset(dataset_date='default',dataset_type=None):
     dataset_type : str
         The type of dataset to be selected; can be either 'production', 
         'consumption', 'import', or 'export' (set as None for default dataset) 
-    
+
     Returns
     -------
     data_df : DataFrame
@@ -36,16 +36,18 @@ def load_dataset(dataset_date='default',dataset_type=None):
         type
     """
     # Get the dataset corresponding to the date identifier given
-    EIA_MER_DATA_PATH = os.getcwd()+'/../data/'
+    EIA_MER_DATA_PATH = os.getcwd()+'/data/'
     if dataset_date == 'default': EIA_MER_DATA_FILE = get_default()
     elif dataset_date == 'newest': EIA_MER_DATA_FILE = get_newest(dataset_type)
+    elif dataset_date == 'test': EIA_MER_DATA_FILE = get_test()
     else: raise ValueError('"Default" and "Newest" are the only dataset date identifiers currently implemented.')
-
-    # Process the dataset to allow conversion to float
     FULL_PATH = EIA_MER_DATA_PATH+EIA_MER_DATA_FILE
     data_df = pd.read_csv(FULL_PATH,na_values='Not Available',dtype={'YYYYMM':str})
+
+    # Process the dataset (eliminate unnecessary columns, change headings)
     data_df = data_df[['YYYYMM','Value','Column_Order']]
-    data_df = data_df.rename(index=str,columns={'YYYYMM':'Date','Column_Order':'ECode'})
+    data_df = data_df.rename(index=str,columns={'YYYYMM':'Date_code','Column_Order':'E_code'})
+    data_df.dropna(inplace=True)
     return data_df
 
 def get_default():
@@ -58,7 +60,6 @@ def get_default():
         The filename of the default dataset.
     """
     return 'EIA_MER.csv'
-
 
 def get_newest(dataset_type):
     """
@@ -85,4 +86,14 @@ def get_newest(dataset_type):
     newestdatafile = newestdir+'/'+typename+'.csv'
     return newestdatafile
 
+def get_test():
+    """
+    Gets the filename of the test dataset.
+    
+    Returns
+    -------
+    str
+        The filename of the test dataset.
+    """
+    return 'test_data/test_EIA_MER.csv'
 

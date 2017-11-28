@@ -52,37 +52,37 @@ def date_to_code(date):
     Parameters
     ----------
     date : str
-        A date, given in the format 'YYYYMM', 'YYYY-MM', or 'MM-YYYY'. 
+        A date, given in the format 'YYYY','YYYYMM', 'YYYY-MM', or 'MM-YYYY'.
         Dashes can be substituted for periods, underscores, or forward slashes.
         
     Returns
     -------
-    date_code : int
+    date_code : str
         The code corresponding to the energy source provided.
     """
     bad_format_err_msg = 'Date "{}" was not given in an acceptable format; try formatting date as "YYYYMM".'.format(date)
     acceptable_separators = ["-",".","/","_"]
     
     # Convert date to code
+    if len(date) == 4: date = date+'01'
     if len(date) == 6:
-        date_code_string = date
+        date_code = date
     elif len(date) == 7:
         if date[4] in acceptable_separators:
-            date_code_string = date.replace(date[4],'')
+            date_code = date.replace(date[4],'')
         elif date[2] in acceptable_separators:
-            date_code_string = (date[3:]+date[:3]).replace(date[2],'')
+            date_code = (date[3:]+date[:3]).replace(date[2],'')
     else:
         raise ValueError(bad_format_err_msg)
         
     # Check reasonability of date provided
     try:
-        year = int(float(date_code_string[0:4]))
-        month = int(float(date_code_string[4:6]))
+        year = int(float(date_code[0:4]))
+        month = int(float(date_code[4:6]))
         if year < 1900 or year > 3000:
             raise ValueError('No data exists for this time period.')
-        if month > 13:  # 13 denotes full year sum
+        if month > 13 or month < 1:  # 13 denotes full year sum
             raise ValueError('A month must be given as a number 1-12')
-        date_code = int(float(date_code_string))
     except:
         raise ValueError(bad_format_err_msg)
     return date_code
