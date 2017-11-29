@@ -64,34 +64,34 @@ class TestEClass:
         max_val = 0.20
         max_month = '197310'
         nuc = EClass('nuclear',data_date='test')
-        nuc_max_val,nuc_max_month = nuc.extrema('max','monthly')
-        assert nuc_max_val == max_val
+        nuc_max_month,nuc_max_val = nuc.extrema('max','monthly')
         assert nuc_max_month == max_month
+        assert nuc_max_val == max_val
 
     def test_extrema_FindingMinimumMonth(self,testdata):
         valarray = testdata.Value.values
         min_val = 0.09
         min_month = '197303'
         nuc = EClass('nuclear',data_date='test')
-        nuc_min_val,nuc_min_month = nuc.extrema('min','monthly')
-        assert nuc_min_val == min_val
+        nuc_min_month,nuc_min_val = nuc.extrema('min','monthly')
         assert nuc_min_month == min_month
+        assert nuc_min_val == min_val
 
     def test_extrema_FindingMaximumYear(self,testdata):
         valarray = testdata.Value.values
         max_val = 1.30
         max_year = '1973'
         nuc = EClass('nuclear',data_date='test')
-        nuc_max_val,nuc_max_year = nuc.extrema('max','yearly')
-        assert nuc_max_val == max_val
+        nuc_max_year,nuc_max_val = nuc.extrema('max','yearly')
         assert nuc_max_year == max_year
+        assert nuc_max_val == max_val
 
     def test_extrema_FindingYearlyMinimum(self,testdata):
         valarray = testdata.Value.values
         min_val = 0.60
         min_year = '1972'
         nuc = EClass('nuclear',data_date='test')
-        nuc_min_val,nuc_min_year = nuc.extrema('min','yearly')
-        assert nuc_min_val == min_val
+        nuc_min_year,nuc_min_val = nuc.extrema('min','yearly')
         assert nuc_min_year == min_year
+        assert nuc_min_val == min_val
 

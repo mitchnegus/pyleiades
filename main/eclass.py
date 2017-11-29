@@ -188,12 +188,12 @@ class EClass:
         
         Returns
         -------
-        extreme_value : float
-            A dataframe giving the specified extreme value and the date of
-            occurrence for that value.
         extrema_date : string
             A string representation of the month in which the extreme value
             occurred (format 'YYYY' or 'YYYYMM')
+        extreme_value : float
+            A dataframe giving the specified extreme value and the date of
+            occurrence for that value.
         """
         # Bound data by start and end dates
         if freq == 'monthly':
@@ -213,9 +213,9 @@ class EClass:
         else:
             raise ValueError(self.extr_errmsg.format(extremum))
         extremum_data = extremum_data[extremum_data.Value == extremum_val]
-        extreme_value = extremum_data['Value'][0]
         extremum_date = extremum_data['Date'][0]
-        return extreme_value,extremum_date
+        extreme_value = extremum_data['Value'][0]
+        return extremum_date,extreme_value
 
     #def more_than(self,amount,start_date,end_date,interval):
         """
