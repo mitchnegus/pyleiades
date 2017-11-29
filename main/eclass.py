@@ -163,7 +163,7 @@ class EClass:
         else:
             raise ValueError(self.freq_errmsg.format(freq))
         totals_data = self._daterange(full_data,start_date,end_date)
-        totals_data = totals_data[['Date','Value']]
+        totals_data.set_index('Date',inplace=True)
 
         # For cumulative totals, take the sum
         if freq == 'cumulative':
