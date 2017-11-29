@@ -25,11 +25,11 @@ class EClass:
         stat_type : str
             The type of statistic to be collected ('production', 'consumption',
             'import', or 'export').
-        dataset : DataFrame, optional
-            The dataset from which to pull information. Must be three columns:
+        data : DataFrame, optional
+            The EIA dataset from which to pull information. Must be three columns:
             date, energy quantity, and energy code. If omitted, use the default
             dataset.
-        dataset_date : str
+        data_date : str
             The date identifier of the dataset; 'default' and 'newest' are 
             current options (the ability to call specific dataset dates to be
             added).
@@ -50,7 +50,7 @@ class EClass:
         self.freq_errmsg = 'Frequency "{}" is not compatible with this dataset; see documentation for permissible frequencies.' 
         self.extr_errmsg = 'Input "{}" is not recognized as an extrema; try "max" or "min"' 
 
-    def _isolate_energy(self,data,E_code):
+    def _isolate_energy(self,E_code,data):
         """
         Isolate one type of energy in the given dataset.
 
