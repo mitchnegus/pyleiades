@@ -42,7 +42,7 @@ class EClass:
             data = load_dataset(dataset_date=data_date,dataset_type=stat_type)
        
         # Isolate this energy's data, separate frequencies, and format the data
-        self.E_data = self._isolate_energy(data,E_code)
+        self.E_data = self._isolate_energy(E_code,data)
         self.monthly_data, self.yearly_data = self._sep_freqs(self.E_data)
         for data_df in self.monthly_data,self.yearly_data:
             data_df.set_index('Date_code',inplace=True)
