@@ -34,7 +34,7 @@ def name_to_code(name):
               'geothermal':7,
               'solar':8,
               'wind':9,
-              'biomass':10,
+             'biomass':10,
               'renewable':11,
               'primary':12}
         

@@ -41,19 +41,44 @@ class EClass:
         if data.empty:
             data = load_dataset(dataset_date=data_date,dataset_type=stat_type)
        
-        # Isolate this energy's data from source and remove the Ecode column
-        E_data = data[data.E_code == E_code]
-        E_data = E_data[['Date_code','Value']]
-
-        # Separate the data into monthly and yearly sets for this energy source
-        self.monthly_data, self.yearly_data = self._sep_month_and_year(E_data)
+        # Isolate this energy's data, separate frequencies, and format the data
+        self.E_data = self._isolate_energy(data,E_code)
+        self.monthly_data, self.yearly_data = self._sep_freqs(self.E_data)
+        for data_df in self.monthly_data,self.yearly_data:
+            data_df.set_index('Date_code',inplace=True)
 
         self.freq_errmsg = 'Frequency "{}" is not compatible with this dataset; see documentation for permissible frequencies.' 
         self.extr_errmsg = 'Input "{}" is not recognized as an extrema; try "max" or "min"' 
 
-    def _sep_month_and_year(self,data):
+    def _isolate_energy(self,data,E_code):
         """
-        Separate the data into monthly and yearly totals
+        Isolate one type of energy in the given dataset.
+
+        Parameters
+        ----------
+        E_code : int
+            The energy code corresponding to the energy source to be selected.
+        data : DataFrame
+            The dataset containing all energy values across energy sources.
+
+        Returns
+        -------
+        E_data : DataFrame
+            A trimmed version of the original dataset, now with only the
+            selected energy source. The energy code column is removed.
+        """
+        E_data = data[data.E_code == E_code]
+        E_data = E_data[['Date_code','Value']]
+        return E_data
+
+    def _sep_freqs(self,data):
+        """
+        Separate the data into monthly and yearly intervals.
+
+        Parameters
+        ----------
+        data : DataFrame
+            The dataset to be partitioned into monthly and yearly intervals.
 
         Returns
         -------
@@ -65,11 +90,9 @@ class EClass:
         # Monthly totals
         monthly_data = data[data.Date_code.str[-2:]!='13']
         monthly_data = monthly_data.assign(Date=monthly_data.Date_code)
-        monthly_data = monthly_data.set_index('Date_code')[['Date','Value']]
         # Yearly totals
         yearly_data = data[data.Date_code.str[-2:]=='13']
         yearly_data = yearly_data.assign(Date=yearly_data.Date_code.str[:-2])
-        yearly_data = yearly_data.set_index('Date_code')[['Date','Value']]
         return monthly_data,yearly_data
 
     def _daterange(self,data,start_date,end_date):
@@ -78,11 +101,11 @@ class EClass:
         
         Parameters
         ----------
-        freq : str
-            The frequency for gathering totals ('monthly','yearly',or
-            'cumulative').
-        start_date, end_date : int
-            The dataset start/end dates (both inclusive) as integers (YYYYMM).
+        data : DataFrame
+            A dataframe containing the data to be resized. The index must be
+            in the format of the EIA date code ('YYYYMM').
+        start_date, end_date : str
+            The dataset start/end dates (both inclusive) as strings ('YYYYMM').
             
         Returns
         -------
@@ -165,9 +188,12 @@ class EClass:
         
         Returns
         -------
-        extremum_data : DataFrame
+        extreme_value : float
             A dataframe giving the specified extreme value and the date of
             occurrence for that value.
+        extrema_date : string
+            A string representation of the month in which the extreme value
+            occurred (format 'YYYY' or 'YYYYMM')
         """
         # Bound data by start and end dates
         if freq == 'monthly':
@@ -187,7 +213,9 @@ class EClass:
         else:
             raise ValueError(self.extr_errmsg.format(extremum))
         extremum_data = extremum_data[extremum_data.Value == extremum_val]
-        return extremum_data
+        extreme_value = extremum_data['Value'][0]
+        extremum_date = extremum_data['Date'][0]
+        return extreme_value,extremum_date
 
     #def more_than(self,amount,start_date,end_date,interval):
         """
