@@ -2,177 +2,96 @@ import pandas as pd
 import numpy as np
 from main.eclass import EClass
 
-
 class TestEClass:
-     
-    def test_MonthlyData(self):
-        monthlydata = pd.DataFrame({'Date':'197301','Value':0.1},
-                                   {'Date':'197302','Value':0.1},
-                                   {'Date':'197303','Value':0.1},
-                                   {'Date':'197304','Value':0.1},
-                                   {'Date':'197305','Value':0.1},
-                                   {'Date':'197306','Value':0.1},
-                                   {'Date':'197307','Value':0.1},
-                                   {'Date':'197308','Value':0.1},
-                                   {'Date':'197309','Value':0.1},
-                                   {'Date':'197310','Value':0.2},
-                                   {'Date':'197311','Value':0.1},
-                                   {'Date':'197312','Value':0.1},)
-        monthlydata = monthlydata.set_index('Date_code')
-        EC = EClass('nuclear',data_date='test')
-        assert np.array_equal(EC.data,preprocdata)
+    
+    def test_IsolateEnergy(self,testdata):
+        E_data = testdata.iloc[7:].Value
+        nuc = EClass('nuclear',data_date='test')
+        nuc_E_data = nuc.E_data.Value
+        assert nuc_E_data.equals(E_data)
 
-    def test_FindingInitialDate(self):
-        testdata = np.array([[195001,1,5],
-                             [195101,1,5]],
-                            float)
-        EC = EClass('nuclear',testdata)
-        assert EC.idate == 195001
+    def test_MonthlyData(self,testdata):
+        valarray = testdata.Value.values
+        monthly_data = np.concatenate([valarray[8:20],valarray[21:23]])
+        nuc = EClass('nuclear',data_date='test')
+        nuc_monthly_data = nuc.monthly_data.Value.values
+        assert np.array_equal(nuc_monthly_data,monthly_data)
+
+    def test_YearlyData(self,testdata):
+        valarray = testdata.Value.values
+        yearly_data = np.array([valarray[7],valarray[20]])
+        nuc = EClass('nuclear',data_date='test')
+        nuc_yearly_data = nuc.yearly_data.Value.values
+        assert np.array_equal(nuc_yearly_data,yearly_data)
+
+    def test_daterange_BoundingInputDates(self,testdata):
+        valarray = testdata.Value.values
+        date_range = np.concatenate([valarray[10:20],valarray[21:22]])
+        nuc = EClass('nuclear',data_date='test')
+        nuc_date_range = nuc._daterange(nuc.monthly_data,'197303','197401').Value.values
+        assert np.array_equal(nuc_date_range,date_range)
     
-    def test_FindingFinalDate(self):
-        testdata = np.array([[195001,1,5],
-                             [195101,1,5]],
-                            float)
-        EC = EClass('nuclear',testdata)
-        assert EC.fdate == 195101
-     
-    def test_daterange_BoundingInputDates(self):
-        testdata = np.array([[195010,1,5],
-                             [195011,2,5],
-                             [195012,2,5],
-                             [195013,7,5],
-                             [195101,2,5],
-                             [195102,1,5],
-                             [195103,1,5]],
-                            float)
-        boundedmonths = np.array([[195011,2],
-                                  [195012,2],
-                                  [195013,7],
-                                  [195101,2],
-                                  [195102,1]],
-                                 float)
-        EC = EClass('nuclear',testdata)
-        assert np.array_equal(EC._daterange(195011,195102),boundedmonths)
-    
-    def test_daterange_BoundingDefaultDates(self):
-        testdata = np.array([[195010,1,5],
-                             [195011,2,5],
-                             [195012,2,5],
-                             [195013,7,5],
-                             [195101,2,5],
-                             [195102,1,5],
-                             [195103,1,5]],
-                            float)
-        EC = EClass('nuclear',testdata)
-        assert np.array_equal(EC._daterange(None,None),testdata[:,0:2])
+    def test_daterange_BoundingDefaultDates(self,testdata):
+        valarray = testdata.Value.values
+        date_range = np.concatenate([valarray[8:20],valarray[21:23]])
+        nuc = EClass('nuclear',data_date='test')
+        nuc_date_range = nuc._daterange(nuc.monthly_data,None,None).Value.values
+        assert np.array_equal(nuc_date_range,date_range)
       
-    def test_monthlydata_FindingDataByMonth(self):
-        testdata = np.array([[195013,2,5],
-                             [195101,1,5],
-                             [195102,1,5],
-                             [195113,3,5]],
-                            float)
-        monthlydata = np.array([[195101,1],
-                                  [195102,1]],
-                                 float)
-        EC = EClass('nuclear',testdata)
-        testdata_bounded = EC._daterange(None,None)
-        assert np.array_equal(EC._monthlydata(testdata_bounded),monthlydata)
+    def test_totals_FindingMonthlyTotals(self,testdata):
+        valarray = testdata.Value.values 
+        monthly_totals = np.concatenate([valarray[8:20],valarray[21:23]])
+        nuc = EClass('nuclear',data_date='test')
+        nuc_monthly_totals = nuc.totals('monthly').Value.values
+        assert np.array_equal(nuc_monthly_totals,monthly_totals)
         
-    def test_yearlydata_FindingDataByYear(self):
-        testdata = np.array([[195013,2,5],
-                             [195101,1,5],
-                             [195102,1,5],
-                             [195113,3,5]],
-                            float)
-        yearlydata = np.array([[195013,2],
-                                 [195113,3]],
-                                float)
-        EC = EClass('nuclear',testdata)
-        testdata_bounded = EC._daterange(None,None)
-        assert np.array_equal(EC._yearlydata(testdata_bounded),yearlydata)
-        
-    def test_totals_FindingMonthlyTotals(self):
-        testdata = np.array([[195013,2,5],
-                             [195101,1,5],
-                             [195102,1,5],
-                             [195113,3,5]],
-                            float)
-        monthlytotals = np.array([[195101,1],
-                                  [195102,1]],
-                                 float)
-        EC = EClass('nuclear',testdata)
-        assert np.array_equal(EC.totals(freq='monthly'),monthlytotals)
-        
-    def test_totals_FindingYearlyTotals(self):
-        testdata = np.array([[195013,2,5],
-                             [195101,1,5],
-                             [195102,1,5],
-                             [195113,3,5]],
-                            float)
-        yearlytotals = np.array([[195013,2],
-                                 [195113,3]],
-                                float)
-        EC = EClass('nuclear',testdata)
-        assert np.array_equal(EC.totals(freq='yearly'),yearlytotals)
+    def test_totals_FindingYearlyTotals(self,testdata):
+        valarray = testdata.Value.values 
+        yearly_totals = np.array([valarray[7],valarray[20]])
+        nuc = EClass('nuclear',data_date='test')
+        nuc_yearly_totals = nuc.totals('yearly').Value.values
+        assert np.array_equal(nuc_yearly_totals,yearly_totals)
 
-    def test_totals_FindingCumulativeTotal(self):
-        testdata = np.array([[195013,2,5],
-                             [195101,1,5],
-                             [195113,3,5],
-                             [195201,1,5]],
-                            float)
-        cumulativetotal = np.array([[195201,6]],
-                                   float)
-        EC = EClass('nuclear',testdata)
-        assert np.array_equal(EC.totals(freq='cumulative'),cumulativetotal)
+    def test_totals_FindingCumulativeTotal(self,testdata):
+        valarray = testdata.Value.values 
+        cumulative_total = np.sum(np.array([valarray[7],valarray[20]]))
+        nuc = EClass('nuclear',data_date='test')
+        nuc_cumulative_total = nuc.totals('cumulative')
+        assert nuc_cumulative_total == cumulative_total
 
-    def test_extrema_FindingMonthlyMaximum(self):
-        testdata = np.array([[195013,6,5],
-                             [195101,1,5],
-                             [195102,4,5],
-                             [195113,5,5],
-                             [195201,1,5]],
-                            float)
-        monthlymax = np.array([[195102,4]],
-                              float)
-        EC = EClass('nuclear',testdata)
-        assert np.array_equal(EC.extrema('max','monthly'),monthlymax)
+    def test_extrema_FindingMaximumMonth(self,testdata):
+        valarray = testdata.Value.values
+        max_val = 0.20
+        max_month = '197310'
+        nuc = EClass('nuclear',data_date='test')
+        nuc_max_val,nuc_max_month = nuc.extrema('max','monthly')
+        assert nuc_max_val == max_val
+        assert nuc_max_month == max_month
 
-    def test_extrema_FindingMonthlyMinimum(self):
-        testdata = np.array([[195013,6,5],
-                             [195101,1,5],
-                             [195102,4,5],
-                             [195113,5,5],
-                             [195201,2,5]],
-                            float)
-        monthlymin = np.array([[195101,1]],
-                              float)
-        EC = EClass('nuclear',testdata)
-        assert np.array_equal(EC.extrema('min','monthly'),monthlymin)
+    def test_extrema_FindingMinimumMonth(self,testdata):
+        valarray = testdata.Value.values
+        min_val = 0.09
+        min_month = '197303'
+        nuc = EClass('nuclear',data_date='test')
+        nuc_min_val,nuc_min_month = nuc.extrema('min','monthly')
+        assert nuc_min_val == min_val
+        assert nuc_min_month == min_month
 
-    def test_extrema_FindingYearlyMinimum(self):
-        testdata = np.array([[195013,7,5],
-                             [195101,2,5],
-                             [195102,3,5],
-                             [195113,5,5],
-                             [195201,1,5]],
-                            float)
-        yearlymin = np.array([[195113,5]],
-                              float)
-        EC = EClass('nuclear',testdata)
-        assert np.array_equal(EC.extrema('min','yearly'),yearlymin)
+    def test_extrema_FindingMaximumYear(self,testdata):
+        valarray = testdata.Value.values
+        max_val = 1.30
+        max_year = '1973'
+        nuc = EClass('nuclear',data_date='test')
+        nuc_max_val,nuc_max_year = nuc.extrema('max','yearly')
+        assert nuc_max_val == max_val
+        assert nuc_max_year == max_year
 
-    def test_extrema_FindingYearlyMaximum(self):
-        testdata = np.array([[195013,4,5],
-                             [195101,2,5],
-                             [195102,3,5],
-                             [195113,5,5],
-                             [195201,1,5]],
-                            float)
-        yearlymax = np.array([[195113,5]],
-                              float)
-        EC = EClass('nuclear',testdata)
-        assert np.array_equal(EC.extrema('max','yearly'),yearlymax)
-
+    def test_extrema_FindingYearlyMinimum(self,testdata):
+        valarray = testdata.Value.values
+        min_val = 0.60
+        min_year = '1972'
+        nuc = EClass('nuclear',data_date='test')
+        nuc_min_val,nuc_min_year = nuc.extrema('min','yearly')
+        assert nuc_min_val == min_val
+        assert nuc_min_year == min_year
 
