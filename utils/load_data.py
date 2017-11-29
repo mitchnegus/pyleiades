@@ -11,6 +11,7 @@ find_most_recent
     Finds the most MER dataset csv file.
 """
 import numpy as np
+import pandas as pd
 import os
 from glob import glob
 
@@ -22,30 +23,32 @@ def load_dataset(dataset_date='default',dataset_type=None):
     ----------
     dataset_date : str
         The date identifier of the dataset; 'default' and 'newest' are current
-        options (specific dataset dates to be added).
+        options (the ability to call specific dataset dates to be added).
     dataset_type : str
         The type of dataset to be selected; can be either 'production', 
         'consumption', 'import', or 'export' (set as None for default dataset) 
-    
+
     Returns
     -------
-    ndarray
-        Data from the EIA MER dataset.
+    data_df : DataFrame
+        Data from the EIA MER dataset; dataframe contains 3 columns: the date,
+        the energy quantitity in quadrillion BTUs, and the code denoting energy
+        type
     """
     # Get the dataset corresponding to the date identifier given
     EIA_MER_DATA_PATH = os.getcwd()+'/data/'
     if dataset_date == 'default': EIA_MER_DATA_FILE = get_default()
     elif dataset_date == 'newest': EIA_MER_DATA_FILE = get_newest(dataset_type)
-    else: raise ValueError('"Default" is the only dataset date identifier currently implemented.')
-
-    # Process the dataset to allow conversion to float
+    elif dataset_date == 'test': EIA_MER_DATA_FILE = get_test()
+    else: raise ValueError('"Default" and "Newest" are the only dataset date identifiers currently implemented.')
     FULL_PATH = EIA_MER_DATA_PATH+EIA_MER_DATA_FILE
-    data_string_array = np.genfromtxt(FULL_PATH,dtype=str,delimiter=',')
-    data_string_array = data_string_array[1:,1:4]
-    data_string_array = np.char.replace(data_string_array,'"','')
-    data_string_array = np.char.replace(data_string_array,'Not Available','nan')
-    data_float_array = data_string_array.astype(float)
-    return data_float_array
+    data_df = pd.read_csv(FULL_PATH,na_values='Not Available',dtype={'YYYYMM':str})
+
+    # Process the dataset (eliminate unnecessary columns, change headings)
+    data_df = data_df[['YYYYMM','Value','Column_Order']]
+    data_df = data_df.rename(index=str,columns={'YYYYMM':'Date_code','Column_Order':'E_code'})
+    data_df.dropna(inplace=True)
+    return data_df
 
 def get_default():
     """
@@ -57,7 +60,6 @@ def get_default():
         The filename of the default dataset.
     """
     return 'EIA_MER.csv'
-
 
 def get_newest(dataset_type):
     """
@@ -84,4 +86,14 @@ def get_newest(dataset_type):
     newestdatafile = newestdir+'/'+typename+'.csv'
     return newestdatafile
 
+def get_test():
+    """
+    Gets the filename of the test dataset.
+    
+    Returns
+    -------
+    str
+        The filename of the test dataset.
+    """
+    return 'test_data/test_EIA_MER.csv'
 
