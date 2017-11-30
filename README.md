@@ -1,4 +1,5 @@
 # *pyleiades*
+[![Build Status](https://travis-ci.org/mnegus01/pyleiades.svg?branch=master)](https://travis-ci.org/mnegus01/pyleiades)
 
 ## Python Library for EIA Data Examination & Exhibition
 
