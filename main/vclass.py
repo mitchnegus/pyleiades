@@ -1,3 +1,6 @@
+import seaborn as sns
+
+
 class VClass:
     
     """
@@ -9,17 +12,36 @@ class VClass:
     include histograms, line graphs, pie charts, and animations.   
     """
     
-    def __init__(self,dataset=np.empty(0)):
+    def __init__(self,data=pd.DataFrame()):
         """
-        Receive energy source(s) and assemble the appropriate class(es).
+        Create a class for constructing visuals from a dataset. 
         
         Parameters
         ----------
-        dataset : array_like, optional
-            The dataset from which to pull information. Must be three ordered
-            columns–date, energy quantity, and energy code–with no headings.
-            If omitted, use the default dataset.
+        data : DataFrame, optional
+            The EIA dataset to be used. Must be three columns: date, energy
+            quantity, and energy code. If omitted, use the default dataset.
         """
+        pass
 
-    def include_energy(self,*energies):
+    def include_energy(self,*energy_source):
+        """
+        Include energy source(s) in the visual.
+        
+        Parameters
+        ----------
+        energy_source : str
+            The energy source to be pulled from the dataset.
+        """
+        pass
+
+    def linegraph(self,subject):
+        """
+        Make a line graph of the chosen energy source histories.
+        
+        Parameters
+        ----------
+        subject : str
+            The subject of the line graph ('totals','maximima', or 'minima').
+        """
         pass
