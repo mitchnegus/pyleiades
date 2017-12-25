@@ -26,9 +26,8 @@ class EClass:
             The type of statistic to be collected ('production', 'consumption',
             'import', or 'export').
         data : DataFrame, optional
-            The EIA dataset from which to pull information. Must be three columns:
-            date, energy quantity, and energy code. If omitted, use the default
-            dataset.
+            The EIA dataset to be used. Must be three columns: date, energy
+            quantity, and energy code. If omitted, use the default dataset.
         data_date : str
             The date identifier of the dataset; 'default' and 'newest' are 
             current options (the ability to call specific dataset dates to be
