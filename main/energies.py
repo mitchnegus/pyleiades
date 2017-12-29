@@ -47,8 +47,10 @@ class Energy:
         for data_df in self.monthly_data,self.yearly_data:
             data_df.set_index('Date_code',inplace=True)
 
-        self.freq_errmsg = 'Frequency "{}" is not compatible with this dataset; see documentation for permissible frequencies.' 
-        self.extr_errmsg = 'Input "{}" is not recognized as an extrema; try "max" or "min"' 
+        self.freq_errmsg = ('Frequency "{}" is not compatible with this data; '
+                            'see documentation for permissible frequencies.') 
+        self.extr_errmsg = ('Input "{}" is not recognized as an extrema; '
+                            'try "max" or "min"') 
 
     def _isolate_energy(self,E_code,data):
         """
@@ -218,7 +220,7 @@ class Energy:
         extreme_value = extremum_data['Value'][0]
         return extremum_date,extreme_value
 
-    #def more_than(self,amount,start_date,end_date,interval):
+    def more_than(self,amount,start_date,end_date,interval):
         """
         Get data for time intervals where more than the given amount of energy was consumed.
         
@@ -233,7 +235,7 @@ class Energy:
         interval : str
             The time intervals considered for extrema comparison ('yearly',or 'monthly').
         """
-        
+        raise NotImplementedError    
     
     
     """
