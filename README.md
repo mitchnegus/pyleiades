@@ -30,6 +30,6 @@ All reported values are in units of quadrillion british thermal units (1.0E15 bt
 
 --------------------------------------------------------------
 
-Outside dependencies are numpy, pandas, and glob.
+Outside dependencies are numpy, pandas, matplotlib, and seaborn.
 
 --------------------------------------------------------------
