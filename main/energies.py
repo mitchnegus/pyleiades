@@ -12,27 +12,25 @@ class Energy:
     attributes, such as energy consumed per decade, per year, or all years in 
     which more than a certain amount of energy was consumed from that source.
     Use this class to extract and return pure data from the dataset.
+    
+    Parameters
+    ----------
+    energy_type : str
+        The type of energy source to be pulled from the dataset.
+    stat_type : str
+        The type of statistic to be collected ('production', 'consumption',
+        'import', or 'export').
+    data : DataFrame, optional
+        The EIA dataset to be used. Must be three columns: date, energy
+        quantity, and energy code. If omitted, use the default dataset.
+    data_date : str
+        The date identifier of the dataset; 'default' and 'newest' are 
+        current options (the ability to call specific dataset dates to be
+        added).
     """
     
-    def __init__(self,energy_type,stat_type='consumption',data=pd.DataFrame(),data_date='default'):
-        """
-        Receive energy source and collect corresponding data.
-        
-        Parameters
-        ----------
-        energy_type : str
-            The type of energy source to be pulled from the dataset.
-        stat_type : str
-            The type of statistic to be collected ('production', 'consumption',
-            'import', or 'export').
-        data : DataFrame, optional
-            The EIA dataset to be used. Must be three columns: date, energy
-            quantity, and energy code. If omitted, use the default dataset.
-        data_date : str
-            The date identifier of the dataset; 'default' and 'newest' are 
-            current options (the ability to call specific dataset dates to be
-            added).
-        """
+    def __init__(self,energy_type,stat_type='consumption',
+                 data=pd.DataFrame(),data_date='default'):
         self.energy_type = energy_type
         # Determine Ecode from energy source name
         E_code = name_to_code(energy_type)

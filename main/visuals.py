@@ -13,22 +13,18 @@ class Visual:
     methods to visualize the data (including the ability to make comparisons
     across energy sources if more than one energy is given. Visualizations 
     include histograms, line graphs, pie charts, and animations.   
+    Parameters
+    ----------
+    data : DataFrame, optional
+        The EIA dataset to be used. Must be three columns: date, energy
+        quantity, and energy code. If omitted, use the default dataset.
+    data_date : str
+        The date identifier of the dataset; 'default' and 'newest' are
+        current options (the ability to call specific dataset dates to be
+        added).
     """
     
     def __init__(self,data=pd.DataFrame(),data_date='default'):
-        """ 
-        Create a class for constructing visuals from a dataset. 
-        
-        Parameters
-        ----------
-        data : DataFrame, optional
-            The EIA dataset to be used. Must be three columns: date, energy
-            quantity, and energy code. If omitted, use the default dataset.
-        data_date : str
-            The date identifier of the dataset; 'default' and 'newest' are
-            current options (the ability to call specific dataset dates to be
-            added).
-        """
         self.complete_data = data
         self.data_date = data_date
         self.energy_data = []
