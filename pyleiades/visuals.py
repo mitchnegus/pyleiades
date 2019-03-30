@@ -1,7 +1,7 @@
 import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
-from main.energies import Energy
+from .energies import Energy
 
 
 class Visual:

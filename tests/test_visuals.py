@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from main.visuals import Visual
+from pyleiades.visuals import Visual
 
 class TestVisual:
 

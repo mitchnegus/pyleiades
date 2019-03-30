@@ -1,5 +1,5 @@
 import numpy as np
-from main.energies import Energy
+from pyleiades.energies import Energy
 
 class TestEnergy:
 
