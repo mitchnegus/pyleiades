@@ -2,7 +2,7 @@ language: python
 # Instructions adapted from https://conda.io/projects/conda/en/latest/user-guide/tasks/use-conda-with-travis-ci.html
 python:
   # We don't actually use the Travis Python, but this keeps it organized.
-  - "3.7"
+  - "3.5"
 
 install:
   - sudo apt-get update
