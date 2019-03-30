@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 from main.visuals import Visual
 
 class TestVisual:
-    
+
     def test_include_energy(self,testdata):
         nuclear_E_data = testdata.iloc[7:].Value
         visual = Visual(data_date='test')
@@ -11,7 +11,7 @@ class TestVisual:
         nuc_E_data = visual.energy_data[0].E_data.Value
         assert 'nuclear' == visual.energy_data[0].energy_type
         assert 'coal' == visual.energy_data[1].energy_type
-        assert nuc_E_data.equals(nuclear_E_data) 
+        assert nuc_E_data.equals(nuclear_E_data)
 
     def test_linegraph_TotalsDefaults(self,testdata):
         valarray = testdata.Value.values

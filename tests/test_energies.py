@@ -2,7 +2,7 @@ import numpy as np
 from main.energies import Energy
 
 class TestEnergy:
-    
+
     def test_IsolateEnergy(self,testdata):
         nuclear_E_data = testdata.iloc[7:].Value
         nuc = Energy('nuclear',data_date='test')
@@ -29,30 +29,30 @@ class TestEnergy:
         nuc = Energy('nuclear',data_date='test')
         nuc_date_range = nuc._daterange(nuc.monthly_data,'197303','197401').Value.values
         assert np.array_equal(nuc_date_range,nuclear_date_range)
-    
+
     def test_daterange_BoundingDefaultDates(self,testdata):
         valarray = testdata.Value.values
         nuclear_date_range = np.concatenate([valarray[8:20],valarray[21:23]])
         nuc = Energy('nuclear',data_date='test')
         nuc_date_range = nuc._daterange(nuc.monthly_data,None,None).Value.values
         assert np.array_equal(nuc_date_range,nuclear_date_range)
-      
+
     def test_totals_FindingMonthlyTotals(self,testdata):
-        valarray = testdata.Value.values 
+        valarray = testdata.Value.values
         nuclear_monthly_tots = np.concatenate([valarray[8:20],valarray[21:23]])
         nuc = Energy('nuclear',data_date='test')
         nuc_monthly_tots = nuc.totals('monthly').Value.values
         assert np.array_equal(nuc_monthly_tots,nuclear_monthly_tots)
-        
+
     def test_totals_FindingYearlyTotals(self,testdata):
-        valarray = testdata.Value.values 
+        valarray = testdata.Value.values
         nuclear_yearly_tots = np.array([valarray[7],valarray[20]])
         nuc = Energy('nuclear',data_date='test')
         nuc_yearly_tots = nuc.totals('yearly').Value.values
         assert np.array_equal(nuc_yearly_tots,nuclear_yearly_tots)
 
     def test_totals_FindingCumulativeTotal(self,testdata):
-        valarray = testdata.Value.values 
+        valarray = testdata.Value.values
         nuclear_cumulative_total = np.sum(np.array([valarray[7],valarray[20]]))
         nuc = Energy('nuclear',data_date='test')
         nuc_cumulative_total = nuc.totals('cumulative')

@@ -2,7 +2,7 @@
 Utilities for loading EIA Monthly Energy Review (MER) datasets.
 
 Functions
----------
+–––––––––
 load_dataset
     Loads an EIA MER dataset from a csv file.
 get_default
@@ -18,18 +18,18 @@ from glob import glob
 def load_dataset(dataset_date='default',dataset_type=None):
     """
     Loads an EIA MER dataset from a csv file.
-    
+
     Parameters
-    ----------
+    ––––––––––
     dataset_date : str
         The date identifier of the dataset; 'default' and 'newest' are current
         options (the ability to call specific dataset dates to be added).
     dataset_type : str
-        The type of dataset to be selected; can be either 'production', 
-        'consumption', 'import', or 'export' (set as None for default dataset) 
+        The type of dataset to be selected; can be either 'production',
+        'consumption', 'import', or 'export' (set as None for default dataset)
 
     Returns
-    -------
+    –––––––
     data_df : DataFrame
         Data from the EIA MER dataset; dataframe contains 3 columns: the date,
         the energy quantitity in quadrillion BTUs, and the code denoting energy
@@ -53,9 +53,9 @@ def load_dataset(dataset_date='default',dataset_type=None):
 def get_default():
     """
     Gets the filename of the default dataset from your filesystem.
-    
+
     Returns
-    -------
+    –––––––
     str
         The filename of the default dataset.
     """
@@ -64,9 +64,9 @@ def get_default():
 def get_newest(dataset_type):
     """
     Gets the filename of the most recent dataset from your filesystem.
-    
+
     Returns
-    -------
+    –––––––
     str
         The filename of the most recently downloaded dataset.
     """
@@ -89,9 +89,9 @@ def get_newest(dataset_type):
 def get_test():
     """
     Gets the filename of the test dataset.
-    
+
     Returns
-    -------
+    –––––––
     str
         The filename of the test dataset.
     """

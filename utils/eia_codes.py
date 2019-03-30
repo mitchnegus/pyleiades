@@ -2,7 +2,7 @@
 Utilities for converting user inputs into EIA dataset codes.
 
 Functions
----------
+–––––––––
 name_to_code
     Converts energy names into EIA energy codes.
 date_to_code
@@ -13,14 +13,14 @@ date_to_code
 def name_to_code(name):
     """
     Convert an energy source name to its corresponding EIA dataset numeric code.
-    
+
     Parameters
-    ----------
+    ––––––––––
     name : str
         The name of an EIA energy or energy group.
-        
+
     Returns
-    -------
+    –––––––
     name_code : int
         The code corresponding to the energy source provided.
     """
@@ -37,9 +37,10 @@ def name_to_code(name):
              'biomass':10,
               'renewable':11,
               'primary':12}
-        
+
     if key_name not in Ecodes:
-        raise KeyError('Key "{}" was not found in the EIA dataset; see documentation for implemented energy sources.'.format(key_name))
+        raise KeyError(f'Key "{key_name}" was not found in the EIA dataset; '
+                        'see documentation for implemented energy sources.')
     else:
         name_code = Ecodes[key_name]
     return name_code
@@ -48,21 +49,22 @@ def name_to_code(name):
 def date_to_code(date):
     """
     Convert an input date to its corresponding EIA dataset numeric date code.
-    
+
     Parameters
-    ----------
+    ––––––––––
     date : str
         A date, given in the format 'YYYY','YYYYMM', 'YYYY-MM', or 'MM-YYYY'.
         Dashes can be substituted for periods, underscores, or forward slashes.
-        
+
     Returns
-    -------
+    –––––––
     date_code : str
         The code corresponding to the energy source provided.
     """
-    bad_format_err_msg = 'Date "{}" was not given in an acceptable format; try formatting date as "YYYYMM".'.format(date)
+    bad_format_err_msg = (f'Date "{date}" was not given in an acceptable '
+                           'format; try formatting date as "YYYYMM".')
     acceptable_separators = ["-",".","/","_"]
-    
+
     # Convert date to code
     if len(date) == 4: date = date+'01'
     if len(date) == 6:
@@ -74,7 +76,7 @@ def date_to_code(date):
             date_code = (date[3:]+date[:3]).replace(date[2],'')
     else:
         raise ValueError(bad_format_err_msg)
-        
+
     # Check reasonability of date provided
     try:
         year = int(float(date_code[0:4]))
