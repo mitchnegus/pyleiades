@@ -15,7 +15,7 @@ import pandas as pd
 import os
 from glob import glob
 
-def load_dataset(dataset_date='default',dataset_type=None):
+def load_dataset(dataset_date='default', dataset_type=None):
     """
     Loads an EIA MER dataset from a csv file.
 
@@ -37,16 +37,21 @@ def load_dataset(dataset_date='default',dataset_type=None):
     """
     # Get the dataset corresponding to the date identifier given
     EIA_MER_DATA_PATH = os.getcwd()+'/data/'
-    if dataset_date == 'default': EIA_MER_DATA_FILE = get_default()
-    elif dataset_date == 'newest': EIA_MER_DATA_FILE = get_newest(dataset_type)
-    elif dataset_date == 'test': EIA_MER_DATA_FILE = get_test()
-    else: raise ValueError('"Default" and "Newest" are the only dataset date identifiers currently implemented.')
+    if dataset_date == 'default':
+        EIA_MER_DATA_FILE = get_default()
+    elif dataset_date == 'newest':
+        EIA_MER_DATA_FILE = get_newest(dataset_type)
+    elif dataset_date == 'test':
+        EIA_MER_DATA_FILE = get_test()
+    else:
+        raise ValueError('"Default" and "Newest" are the only dataset date '
+                         'identifiers currently implemented.')
     FULL_PATH = EIA_MER_DATA_PATH+EIA_MER_DATA_FILE
-    data_df = pd.read_csv(FULL_PATH,na_values='Not Available',dtype={'YYYYMM':str})
+    data_df = pd.read_csv(FULL_PATH, na_values='Not Available', dtype={'YYYYMM':str})
 
     # Process the dataset (eliminate unnecessary columns, change headings)
-    data_df = data_df[['YYYYMM','Value','Column_Order']]
-    data_df = data_df.rename(index=str,columns={'YYYYMM':'Date_code','Column_Order':'E_code'})
+    data_df = data_df[['YYYYMM', 'Value', 'Column_Order']]
+    data_df = data_df.rename(index=str, columns={'YYYYMM':'Date_code', 'Column_Order':'E_code'})
     data_df.dropna(inplace=True)
     return data_df
 
@@ -81,7 +86,7 @@ def get_newest(dataset_type):
     newestdir = directories[np.argmax(dirdates)]
     basename = newestdir.split('/')[-1]
     typelist = basename.split('_')
-    typelist.insert(2,label)
+    typelist.insert(2, label)
     typename = '_'.join(typelist)
     newestdatafile = newestdir+'/'+typename+'.csv'
     return newestdatafile

@@ -1,6 +1,6 @@
 import pandas as pd
-from utils.load_data import load_dataset
-from utils.eia_codes import name_to_code, date_to_code
+from .utils.load_data import load_dataset
+from .utils.eia_codes import name_to_code, date_to_code
 
 
 class Energy:
@@ -28,8 +28,8 @@ class Energy:
         added).
     """
 
-    def __init__(self,energy_type,stat_type='consumption',
-                 data=pd.DataFrame(),data_date='default'):
+    def __init__(self, energy_type, stat_type='consumption',
+                 data=pd.DataFrame(), data_date='default'):
         self.energy_type = energy_type
         # Determine Ecode from energy source name
         E_code = name_to_code(energy_type)
@@ -165,15 +165,15 @@ class Energy:
             full_data = self.yearly_data
         else:
             raise ValueError(self.freq_errmsg.format(freq))
-        totals_data = self._daterange(full_data,start_date,end_date)
-        totals_data.set_index('Date',inplace=True)
+        totals_data = self._daterange(full_data, start_date, end_date)
+        totals_data.set_index('Date', inplace=True)
 
         # For cumulative totals, take the sum
         if freq == 'cumulative':
             totals_data = totals_data.Value.sum()
         return totals_data
 
-    def extrema(self,extremum,freq='yearly',start_date=None,end_date=None):
+    def extrema(self, extremum, freq='yearly', start_date=None, end_date=None):
         """
         Get the maximum/minimum energy consumed over a given period.
 
@@ -206,7 +206,7 @@ class Energy:
             full_data = self.yearly_data
         else:
             raise ValueError(self.freq_errmsg.format(freq))
-        extremum_data = self._daterange(full_data,start_date,end_date)
+        extremum_data = self._daterange(full_data, start_date, end_date)
 
         # Select max or min
         extremum = extremum.lower()[:3]
@@ -221,7 +221,7 @@ class Energy:
         extreme_value = extremum_data['Value'][0]
         return extremum_date,extreme_value
 
-    def more_than(self,amount,start_date,end_date,interval):
+    def more_than(self, amount, start_date, end_date, interval):
         """
         Get data for time intervals where more than the given amount of energy was consumed.
 

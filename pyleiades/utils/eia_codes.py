@@ -63,7 +63,7 @@ def date_to_code(date):
     """
     bad_format_err_msg = (f'Date "{date}" was not given in an acceptable '
                            'format; try formatting date as "YYYYMM".')
-    acceptable_separators = ["-",".","/","_"]
+    acceptable_separators = ["-", ".", "/", "_"]
 
     # Convert date to code
     if len(date) == 4: date = date+'01'
@@ -73,7 +73,7 @@ def date_to_code(date):
         if date[4] in acceptable_separators:
             date_code = date.replace(date[4],'')
         elif date[2] in acceptable_separators:
-            date_code = (date[3:]+date[:3]).replace(date[2],'')
+            date_code = (date[3:] + date[:3]).replace(date[2], '')
     else:
         raise ValueError(bad_format_err_msg)
 

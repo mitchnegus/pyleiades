@@ -34,7 +34,7 @@ class Visual:
         self.sub_errmsg = ('Subject "{}" is not compatible with this visual; '
                            'see documentation for permissible subjects.')
 
-    def include_energy(self,*energy_type):
+    def include_energy(self, *energy_type):
         """
         Include energy source(s) in the visual.
 
@@ -44,9 +44,9 @@ class Visual:
             The type of energy source to be pulled from the dataset.
         """
         for E_type in energy_type:
-            self.energy_data.append(Energy(E_type,data_date=self.data_date))
+            self.energy_data.append(Energy(E_type, data_date=self.data_date))
 
-    def linegraph(self,subject,freq='yearly',start_date=None,end_date=None):
+    def linegraph(self, subject, freq='yearly', start_date=None, end_date=None):
         """
         Make a line graph of the chosen energy source histories.
 
@@ -68,17 +68,17 @@ class Visual:
 
         # Get data for the selected subject and merge into one dataframe
         if subject == 'totals':
-            subject_data = [energy.totals(freq,start_date,end_date)
+            subject_data = [energy.totals(freq, start_date, end_date)
                             for energy in self.energy_data]
         elif subject == 'maxima':
-            subject_data = [energy.extrema('max',freq,start_date,end_date)
+            subject_data = [energy.extrema('max', freq, start_date, end_date)
                             for energy in self.energy_data]
         elif subject == 'minima':
-            subject_data = [energy.extrema('min',freq,start_date,end_date)
+            subject_data = [energy.extrema('min', freq, start_date, end_date)
                             for energy in self.energy_data]
         else:
             raise ValueError(self.sub_errmsg.format(subject))
-        graph_data = pd.concat(subject_data,axis=1)
+        graph_data = pd.concat(subject_data, axis=1)
         graph_data.columns = [energy.energy_type for energy in self.energy_data]
         graph_data.index = graph_data.index.astype(int)
 
@@ -89,7 +89,7 @@ class Visual:
             ax.set_xticks(graph_data.index[::10])
         elif freq == 'monthly':
             month_ticks = graph_data.index[::120]
-            month_labels = [str(t)[-2:]+'/'+str(t)[:-2] for t in month_ticks]
+            month_labels = [f'{str(t)[-2:]}/{str(t)[:-2]}' for t in month_ticks]
             graph_data.index = graph_data.index.astype(int)
             ax.set_xticks(graph_data.index[::120])
             ax.set_xticklabels(month_labels)
