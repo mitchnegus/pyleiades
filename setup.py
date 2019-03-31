@@ -1,4 +1,16 @@
 #!/usr/bin/env python3
+
+"""
+pyleiades: Python Library for EIA Data Examination & Exhibition
+
+Tools to use with the EIA Monthly Energy Review datasets. This package provides
+an API for performing more sophisticated examination and visualization of the
+Energy Information Administration (EIA) Monthly Energy Review (MER) datasets.
+
+Data can be accessed directly at the EIA website:
+    https://www.eia.gov/totalenergy/data/browser/
+"""
+
 DOCLINES = (__doc__ or '').split("\n")
 
 try:

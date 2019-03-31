@@ -27,14 +27,41 @@ The basic energy sources are reported in the following groups:
 ###### Nuclear
 * Fission
 
-The data is published monthly on the [EIA's website](https://www.eia.gov/totalenergy/data/monthly/), and as of March 31st, 2019 records were provided up through December 2018.
+The data is published monthly on the [EIA's website](https://www.eia.gov/totalenergy/data/monthly/), and as of March 31st, 2019 records were provided up through December 2018. This package also includes data up to date through the end of 2018, though more recent data can be downloaded using an included script. 
 
 All reported values are in units of quadrillion british thermal units (1.0E15 btu). Be aware that the datasets may provide [more precision](https://www.eia.gov/totalenergy/data/monthly/dataunits.php) than is published in the PDF reports.
 
 ## Installation
 
---------------------------------------------------------------
+_pyleiades_ is hosted through the Python Package Index (PyPI) and can be easily installed using pip.
+From the command line, run
 
-Outside dependencies are numpy, pandas, matplotlib, and seaborn.
+```
+pip install pyleiades
+```
 
---------------------------------------------------------------
+The module requires a recent version of python 3 (3.6 or greater), pandas, and matplotlib, among others.
+If you run into trouble running the package, try using the Anaconda environment provided in this repo.
+Install the environment using the command
+
+```
+conda env create -f environment.yml
+```
+
+and activate the environment by issuing the command
+
+```
+conda activate pyleiades
+```
+
+## Updating
+
+An archive of EIA Monthly Energy Review datasets is kept in the `pyleiades` data repository. 
+This may not include the most up to date information, and so the package comes with a script to update the available data.
+Once the package is installed, run 
+
+```
+update_eia_data.py
+```
+
+from the command line to download the most recent data from the EIA website. 
