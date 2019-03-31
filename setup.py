@@ -17,16 +17,18 @@ except ImportError:
 
 from os import path
 
+package_name = 'pyleiades'
 project_dir = path.abspath(path.dirname(__file__))
-# Read the contents of the VERSION file
-with open(path.join(project_dir, 'VERSION')) as version_file:
+package_dir = path.join(project_dir, package_name)
+# Read the contents of the _version file
+with open(path.join(package_dir, '_version')) as version_file:
     version = version_file.read().strip()
 # Read the contents of the README file
 with open(path.join(project_dir, 'README.md'), encoding='utf-8') as readme_file:
     long_description = readme_file.read()
 
 setup(
-    name='pyleiades',
+    name=package_name,
     version=version,
     description='An API for examing the EIA Monthly Energy Review datasets.',
     author='Mitch Negus',

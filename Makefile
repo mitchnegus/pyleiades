@@ -4,7 +4,9 @@ include config.mk
 ## dist		: Prepare the package for distribution
 .PHONY : dist
 dist :
+	$(RM) dist/*
 	python setup.py sdist bdist_wheel
+	twine upload dist/*
 
 ## develop 	: Install the package in development mode
 .PHONY : develop 
