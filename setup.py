@@ -19,7 +19,7 @@ from os import path
 
 project_dir = path.abspath(path.dirname(__file__))
 # Read the contents of the VERSION file
-with open(os.path.join(project_dir, 'VERSION')) as version_file:
+with open(path.join(project_dir, 'VERSION')) as version_file:
     version = version_file.read().strip()
 # Read the contents of the README file
 with open(path.join(project_dir, 'README.md'), encoding='utf-8') as readme_file:
@@ -33,7 +33,7 @@ setup(
     author_email='mitchell.negus.17@gmail.com',
     license='FreeBSD',
     long_description=long_description,
-    long_description_content_type='text/markdown'
+    long_description_content_type='text/markdown',
     url='https://github.com/mitchnegus/pyleiades',
     packages=['pyleiades', 'pyleiades.utils'],
     scripts=['scripts/update_eia_data.py'],

@@ -1,6 +1,11 @@
 # Include variables
 include config.mk
 
+## dist		: Prepare the package for distribution
+.PHONY : dist
+dist :
+	python setup.py sdist bdist_wheel
+
 ## develop 	: Install the package in development mode
 .PHONY : develop 
 develop :
