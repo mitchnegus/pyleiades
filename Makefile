@@ -1,3 +1,6 @@
+# Include variables
+include config.mk
+
 ## develop 	: Install the package in development mode
 .PHONY : develop 
 develop :
@@ -11,7 +14,7 @@ install :
 ## test		: Run tests
 .PHONY : test
 test :
-	pytest --cov=pyleiades --cov-report html
+	pytest --cov=pyleiades --cov-config=$(COVERAGE_CONFIG) --cov-report html
 
 .PHONY : help
 help : Makefile

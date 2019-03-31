@@ -1,3 +1,4 @@
+import pytest
 import numpy as np
 from pyleiades.energies import Energy
 
@@ -54,6 +55,11 @@ class TestEnergy:
         nuc_cumulative_total = nuc.totals('cumulative')
         assert nuc_cumulative_total == nuc_test_total
 
+    def test_totals_invalid_freq(self, testdata):
+        nuc = Energy('nuclear', data=testdata)
+        with pytest.raises(ValueError):
+            nuc_cumulative_total = nuc.totals('test')
+
     def test_extrema_maximum_month(self, testdata):
         nuc_test_max_month, nuc_test_max_val = '197310', 0.20
         nuc = Energy('nuclear', data=testdata)
@@ -82,3 +88,13 @@ class TestEnergy:
         nuc_min_year, nuc_min_val = nuc.extrema('min', 'yearly')
         assert nuc_min_year == nuc_test_min_year
         assert nuc_min_val == nuc_test_min_val
+
+    def test_extrema_invalid_freq(self, testdata):
+        nuc = Energy('nuclear', data=testdata)
+        with pytest.raises(ValueError):
+            nuc_cumulative_total = nuc.extrema('max', 'test')
+
+    def test_extrema_invalid_ext(self, testdata):
+        nuc = Energy('nuclear', data=testdata)
+        with pytest.raises(ValueError):
+            nuc_cumulative_total = nuc.extrema('test', 'yearly')

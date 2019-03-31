@@ -10,7 +10,7 @@ import os
 import numpy as np
 import pandas as pd
 from glob import glob
-from pyleiades import DATA_DIR, ARCHIVE_DIR
+import pyleiades
 
 def load_dataset(dataset_date=None, dataset_type=None):
     """
@@ -34,7 +34,7 @@ def load_dataset(dataset_date=None, dataset_type=None):
     """
     # Get the dataset file corresponding to the date identifier given
     if dataset_date is None:
-        data_dir = DATA_DIR
+        data_dir = pyleiades.DATA_DIR
     else:
         data_dir = _find_directory_for_date(dataset_date)
     if dataset_type is None:
@@ -48,7 +48,7 @@ def load_dataset(dataset_date=None, dataset_type=None):
 
 def _find_directory_for_date(dataset_date):
         """Find the archived directory for a given date, if it exists."""
-        dated_dir = f'{ARCHIVE_DIR}/EIA_MER_{dataset_date}'
+        dated_dir = f'{pyleiades.ARCHIVE_DIR}/EIA_MER_{dataset_date}'
         if os.path.isdir(dated_dir):
             return dated_dir
         else:

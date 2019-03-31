@@ -39,8 +39,8 @@ def name_to_code(name):
                     'primary':12}
 
     if key_name not in energy_codes:
-        raise KeyError(f'Key "{key_name}" was not found in the EIA dataset; '
-                        'see documentation for implemented energy sources.')
+        raise KeyError('Key "{}" was not found in the EIA dataset; see '
+                       'documentation for implemented energy sources.')
     else:
         name_code = energy_codes[key_name]
     return name_code
@@ -77,27 +77,28 @@ def date_to_code(date):
             date = date.replace(separator, acceptable_separators[0])
         date_list = date.split(acceptable_separators[0])
         if len(date_list) != 2:
-            raise ValueError(bad_format_err_msg)
+            raise ValueError(bad_format_err_msg.format(date))
         # Check whether the first or second entry is the year
         if len(date_list[0]) == 4:
             date_code = ''.join(date_list)
         elif len(date_list[1]) == 4:
             date_code = ''.join(date_list[::-1])
         else:
-            raise ValueError(bad_format_err_msg)
+            raise ValueError(bad_format_err_msg.format(date))
     else:
-        raise ValueError(bad_format_err_msg)
+        raise ValueError(bad_format_err_msg.format(date))
 
     # Check reasonability of date provided
     try:
+        # The date must be able to be expressed numerically
         int(date_code)
-        year = int(date_code[:4])
-        month = int(date_code[4:])
-        if year < 1900 or year > datetime.datetime.now().year:
-            raise ValueError('Data only exists from the middle of the 20th '
-                             'century to the present.')
-        if month > 13 or month < 1:  # 13 denotes full year sum
-            raise ValueError('A month must be given as a number 1-12')
     except:
-        raise ValueError(bad_format_err_msg)
+        raise ValueError(bad_format_err_msg.format(date))
+    year = int(date_code[:4])
+    month = int(date_code[4:])
+    if year < 1900 or year > datetime.datetime.now().year:
+        raise ValueError('Data only exists from the middle of the 20th '
+                         'century to the present.')
+    if month > 13 or month < 1:  # 13 denotes full year sum
+        raise ValueError('A month must be given as a number 1-12')
     return date_code
