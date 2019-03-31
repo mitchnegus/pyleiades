@@ -1,5 +1,6 @@
 EIA_plots.ipynb
 .ipynb_checkpoints
+*.swp
 *.xls*
 
 # Byte-compiled / optimized / DLL files
