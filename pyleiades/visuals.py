@@ -82,18 +82,21 @@ class Visual:
             raise ValueError(self.sub_errmsg.format(subject))
         graph_data = pd.concat(subject_data, axis=1)
         graph_data.columns = [energy.energy_type for energy in self.energies]
-        graph_data.index = graph_data.index.astype(int)
+        dates = graph_data.index
 
         # Generate the plot
-        ax = graph_data.plot()
+        fig, ax = plt.subplots(figsize=(10,6))
+        for column in graph_data.columns:
+            data_points = len(graph_data)
+            ax.plot(range(data_points), graph_data[column])
         ax.set_title('Energy Consumption History')
         if freq == 'yearly':
-            ax.set_xticks(graph_data.index[::10])
+            interval = 10
+            xticklabels = dates[::interval]
         elif freq == 'monthly':
-            month_ticks = graph_data.index[::120]
-            month_labels = [f'{str(t)[-2:]}/{str(t)[:-2]}' for t in month_ticks]
-            graph_data.index = graph_data.index.astype(int)
-            ax.set_xticks(graph_data.index[::120])
-            ax.set_xticklabels(month_labels)
+            interval = 120
+            xticklabels = [f'{_[-2:]}/{_[:-2]}' for _ in dates[::interval]]
+        ax.set_xticks(range(0, data_points, interval))
+        ax.set_xticklabels(xticklabels)
         ax.set_ylabel('Energy [QBTU]')
         return ax
