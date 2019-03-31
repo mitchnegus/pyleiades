@@ -43,35 +43,33 @@ def generate_filename(table_type, table_format):
     ext = TABLE_FORMATS[table_format]
     return f'EIA_MER_{table_type}.{ext}'
 
-def get_current_data_publication_date():
+def get_data_publication_date():
     """Get the date of the current EIA MER."""
-    current_data = pd.read_excel(f'{OVERVIEW_TABLE}.xlsx')
-    column = current_data['U.S. Energy Information Administration'].dropna()
+    data = pd.read_excel(f'{OVERVIEW_TABLE}.xlsx')
+    column = data['U.S. Energy Information Administration'].dropna()
     date_cell = column[column.astype(str).str.contains('Release Date')].iloc[0]
     date_string = date_cell.split(':')[1].strip()
     date = datetime.datetime.strptime(date_string, '%B %d, %Y').date()
     return date
 
-def move_current_data_to_archive():
+def include_data_in_archive():
     """
-    Move the currently downloaded EIA data to the archive.
+    Include the downloaded EIA data in the archive.
 
-    If it exists, move the current EIA dataset to an archive (files are all
-    less than one megabyte, so storing them for the conceivable future is not
-    problematic.)
+    Add a folder with the downloaded EIA dataset to the archive location (files
+    are all less than one megabyte, so storing them for the conceivable future
+    is not problematic.)
     """
-    if os.path.isfile(f'{OVERVIEW_TABLE}.xlsx'):
-        # The file exists, get the date and format it properly
-        date = str(get_current_data_publication_date()).replace('-', '')
-    else:
-        return
+    # The file exists, get the date and format it properly
+    date = str(get_data_publication_date()).replace('-', '')
     new_archive_dir = f'{ARCHIVE_DIR}/EIA_MER_{date}'
     try:
        os.makedirs(new_archive_dir)
     except OSError:
         # Give the user a chance to avoid files being overwritten
-        answer = input(f"The directory '{new_archive_dir}' already exists."
-                        "Should it be overwritten? [y/n]")
+        answer = input("It seems as though you already have the most recent "
+                       "dataset archived already. Would you like to "
+                       "overwrite that information? [y/n] ")
         if answer[0].lower() != 'y':
             return
     # Move the files to the archive
@@ -82,7 +80,8 @@ def move_current_data_to_archive():
             if os.path.isfile(current_path):
                 new_path = f'{new_archive_dir}/{filename}'
                 os.rename(current_path, new_path)
-    print(f'Created the archive directory:\n\t{new_archive_dir}\n')
+    print(f'Created the archive directory:\n\t{new_archive_dir}')
+
 
 
 def download_eia_data_table(table_title):
@@ -108,11 +107,12 @@ def download_eia_data_table(table_title):
 def main():
     """Update the app's data from the EIA website."""
     print()
-    # Move the current data to the archive
-    move_current_data_to_archive()
     # Download the files, with printed status updates
     print('Downloading the most recent EIA monthly energy review data:')
     for table_title in MER_TABLES:
         print(f'\t-Energy {table_title} table')
         download_eia_data_table(table_title)
-    print('Download complete.\n')
+    print()
+    # Include the data in the archive
+    include_data_in_archive()
+    print('\nDownload complete.\n')
