@@ -46,23 +46,23 @@ def load_dataset(dataset_date=None, dataset_type=None):
     data_df = _format_dataset(data_df)
     return data_df
 
-def _find_directory_for_date(date):
+def _find_directory_for_date(dataset_date):
         """Find the archived directory for a given date, if it exists."""
-        dated_dir = f'{ARCHIVE_DIR}/EIA_MER_{date}'
+        dated_dir = f'{ARCHIVE_DIR}/EIA_MER_{dataset_date}'
         if os.path.isdir(dated_dir):
             return dated_dir
         else:
-            raise ValueError(f"The dataset for the date '{date}' could not be "
-                              "found.")
+            raise ValueError(f"The dataset for the date '{dataset_date}' "
+                              "could not be found.")
 
-def _find_dataset(data_dir, type):
+def _find_dataset(data_dir, dataset_type):
     """Find the filename for the given dataset type, if it exists."""
-    data_filename = f'EIA_MER_{dataset_type}'
+    data_filename = f'EIA_MER_{dataset_type}.csv'
     data_path = f'{data_dir}/{data_filename}'
     if os.path.isfile(data_path):
         return data_path
     else:
-        raise ValueError(f"The '{type}' type dataset could not be found.")
+        raise ValueError(f"The '{dataset_type}' type dataset could not be found.")
 
 def _format_dataset(data_df):
     """Format the dataset for further analysis."""

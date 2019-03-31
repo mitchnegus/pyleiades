@@ -27,9 +27,11 @@ class Energy:
         automatically uses the most recently downloaded dataset.)
     """
 
-    def __init__(self, energy_type, stat_type='consumption',
-                 data=None, data_date=None):
+    def __init__(self, energy_type, data=None,
+                 stat_type='consumption', data_date=None):
         self.energy_type = energy_type
+        self.stat_type = stat_type
+        self.data_date = data_date
         # Determine energy code from energy source name
         energy_code = name_to_code(energy_type)
 
@@ -39,7 +41,7 @@ class Energy:
 
         # Isolate this energy's data, separate frequencies, and format the data
         self.energy_data = self._isolate_energy(energy_code, data)
-        self.monthly_data, self.yearly_data = self._sep_freqs(energy_data)
+        self.monthly_data, self.yearly_data = self._sep_freqs(self.energy_data)
 
         self.freq_errmsg = ('Frequency "{}" is not compatible with this data; '
                             'see documentation for permissible frequencies.')
@@ -67,7 +69,7 @@ class Energy:
         return energy_data[['date_code', 'value']]
 
     @staticmethod
-    def _sep_freqs():
+    def _sep_freqs(data):
         """
         Separate the data into monthly and yearly intervals.
 
@@ -84,14 +86,14 @@ class Energy:
             A subset of the data with the energy values reported yearly.
         """
         # Separate monthly and yearly totals
-        monthly_data = data[data.date_code.str[-2:]!='13']
-        yearly_data = data[data.date_code.str[-2:]=='13']
+        monthly_data = data[data.date_code.str[-2:] != '13'].copy()
+        yearly_data = data[data.date_code.str[-2:] == '13'].copy()
         # Index the dataframes by the date
         for df in monthly_data, yearly_data:
             df.rename(index=str, columns={'date_code': 'date'}, inplace=True)
             df.set_index('date', inplace=True);
         # Remove date code '13' from end of yearly dates
-        yearly_data['date'] = yearly_data.date_code.str.slice(stop=4)
+        yearly_data.index = yearly_data.index.str.slice(stop=4)
         return monthly_data, yearly_data
 
     @staticmethod
@@ -216,24 +218,27 @@ class Energy:
         else:
             raise ValueError(self.extr_errmsg.format(extremum))
         extremum_data = extremum_data[extremum_data.value == extremum_val]
-        extremum_date = extremum_data.date[0]
+        extremum_date = extremum_data.index[0]
         extreme_value = extremum_data.value[0]
         return extremum_date, extreme_value
 
     def more_than(self, amount, start_date, end_date, interval):
         """
-        Get data for time intervals where more than the given amount of energy was consumed.
+        Get data for intervals with more energy consumption than a given level.
 
         Parameters
         ––––––––––
         amount: float
-            The lower boundary (exclusive) for which data may be included in the dataset.
+            The lower boundary (exclusive) for which data may be included in
+            the dataset.
         start_date, end_date : str
-            The user specified dataset starting and ending dates (both inclusive);
-            acceptable formats are 'YYYYMM', 'YYYY-MM', or 'MM-YYYY'. Dashes ("-") can
-            be substituted for periods ("."), underscores ("_"), or forward slashes ("/").
+            The user specified dataset starting and ending dates (both
+            inclusive); acceptable formats are 'YYYYMM', 'YYYY-MM', or
+            'MM-YYYY'. Dashes ("-") can be substituted for periods ("."),
+            underscores ("_"), or forward slashes ("/").
         interval : str
-            The time intervals considered for extrema comparison ('yearly',or 'monthly').
+            The time intervals considered for extrema comparison ('yearly',or
+            'monthly').
         """
         raise NotImplementedError
 

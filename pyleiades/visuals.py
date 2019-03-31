@@ -19,32 +19,34 @@ class Visual:
         The EIA dataset to be used. Must be three columns: date, energy
         quantity, and energy code. If omitted, use the default dataset.
     data_date : str
-        The date identifier of the dataset; 'default' and 'newest' are
-        current options (the ability to call specific dataset dates to be
-        added).
+        The date identifier of the dataset. (The default value is `None`, which
+        automatically uses the most recently downloaded dataset.)
     """
 
-    def __init__(self,data=pd.DataFrame(),data_date='default'):
+    def __init__(self, data=None, stat_type='consumption', data_date=None):
         self.complete_data = data
+        self.stat_type = stat_type
         self.data_date = data_date
-        self.energy_data = []
+        self.energies = []
 
         self.empty_errmsg = ('No energy histories have been chosen yet for '
                              'the visual.')
         self.sub_errmsg = ('Subject "{}" is not compatible with this visual; '
                            'see documentation for permissible subjects.')
 
-    def include_energy(self, *energy_type):
+    def include_energy(self, *energy_types):
         """
         Include energy source(s) in the visual.
 
         Parameters
         ––––––––––
-        energy_type : str
-            The type of energy source to be pulled from the dataset.
+        energy_types : str
+            The type(s) of energy source to be pulled from the dataset.
         """
-        for E_type in energy_type:
-            self.energy_data.append(Energy(E_type, data_date=self.data_date))
+        for energy_type in energy_types:
+            energy = Energy(energy_type, stat_type=self.stat_type,
+                            data_date=self.data_date)
+            self.energies.append(energy)
 
     def linegraph(self, subject, freq='yearly', start_date=None, end_date=None):
         """
@@ -69,13 +71,13 @@ class Visual:
         # Get data for the selected subject and merge into one dataframe
         if subject == 'totals':
             subject_data = [energy.totals(freq, start_date, end_date)
-                            for energy in self.energy_data]
+                            for energy in self.energies]
         elif subject == 'maxima':
             subject_data = [energy.extrema('max', freq, start_date, end_date)
-                            for energy in self.energy_data]
+                            for energy in self.energies]
         elif subject == 'minima':
             subject_data = [energy.extrema('min', freq, start_date, end_date)
-                            for energy in self.energy_data]
+                            for energy in self.energies]
         else:
             raise ValueError(self.sub_errmsg.format(subject))
         graph_data = pd.concat(subject_data, axis=1)
