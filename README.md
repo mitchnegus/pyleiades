@@ -40,7 +40,7 @@ From the command line, run
 pip install pyleiades
 ```
 
-The module requires a recent version of python 3 (3.6 or greater), pandas, and matplotlib, among others.
+The module requires a recent version of Python 3 (3.6 or greater), pandas, and matplotlib, among others.
 If you run into trouble running the package, try using the Anaconda environment provided in this repo.
 Install the environment using the command
 
