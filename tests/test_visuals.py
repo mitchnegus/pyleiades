@@ -5,13 +5,13 @@ from pyleiades.visuals import Visual
 class TestVisual:
 
     def test_include_energy(self, testdata):
-        nuclear_E_data = testdata.iloc[7:].Value
+        nuclear_test_data = testdata.iloc[7:].Value
         visual = Visual(data_date='test')
         visual.include_energy('nuclear', 'coal')
-        nuc_E_data = visual.energy_data[0].E_data.Value
+        nuclear_energy_data = visual.energy_data[0].energy_data.value
         assert 'nuclear' == visual.energy_data[0].energy_type
         assert 'coal' == visual.energy_data[1].energy_type
-        assert nuc_E_data.equals(nuclear_E_data)
+        assert nuclear_energy_data.equals(nuclear_E_data)
 
     #def test_linegraph_TotalsDefaults(self,testdata):
     #    valarray = testdata.Value.values

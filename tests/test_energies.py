@@ -4,16 +4,16 @@ from pyleiades.energies import Energy
 class TestEnergy:
 
     def test_IsolateEnergy(self, testdata):
-        nuclear_E_data = testdata.iloc[7:].Value
-        nuc = Energy('nuclear', data_date='test')
-        nuc_E_data = nuc.E_data.Value
-        assert nuc_E_data.equals(nuclear_E_data)
+        nuclear_test_data = testdata.iloc[7:].value
+        nuclear = Energy('nuclear', data_date='test')
+        nuclear_energy_data = nuclear.energy_data['value']
+        assert nuclear_energy_data.equals(nuclear_test_data)
 
     def test_MonthlyData(self, testdata):
-        valarray = testdata.Value.values
+        valarray = testdata.value.values
         nuclear_monthly_data = np.concatenate([valarray[8:20], valarray[21:23]])
-        nuc = Energy('nuclear', data_date='test')
-        nuc_monthly_data = nuc.monthly_data.Value.values
+        nuclear = Energy('nuclear', data_date='test')
+        nuclear_monthly_data = nuclear.monthly_data.value.values
         assert np.array_equal(nuc_monthly_data, nuclear_monthly_data)
 
     def test_YearlyData(self, testdata):
