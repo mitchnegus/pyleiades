@@ -39,8 +39,8 @@ def name_to_code(name):
                     'primary':12}
 
     if key_name not in energy_codes:
-        raise KeyError('Key "{}" was not found in the EIA dataset; see '
-                       'documentation for implemented energy sources.')
+        raise KeyError(f"Key '{name}' was not found in the EIA dataset; see "
+                        "the documentation for implemented energy sources.")
     else:
         name_code = energy_codes[key_name]
     return name_code

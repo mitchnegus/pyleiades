@@ -34,7 +34,7 @@ MER_TABLES = {'overview': 'T01.01',
               'consumption': 'T01.03',
               'imports': 'T01.04A',
               'exports': 'T01.04B'}
-OVERVIEW_TABLE = f'{DATA_DIR}/EIA_MER_overview'
+OVERVIEW_TABLE = os.path.join(DATA_DIR, 'EIA_MER_overview')
 TABLE_FORMATS = {'csv': 'csv',
                  'xls': 'xlsx'}
 
@@ -62,7 +62,7 @@ def include_data_in_archive():
     """
     # The file exists, get the date and format it properly
     date = str(get_data_publication_date()).replace('-', '')
-    new_archive_dir = f'{ARCHIVE_DIR}/EIA_MER_{date}'
+    new_archive_dir = os.path.join(ARCHIVE_DIR, f'EIA_MER_{date}')
     try:
        os.makedirs(new_archive_dir)
     except OSError:
@@ -76,9 +76,9 @@ def include_data_in_archive():
     for table_title in MER_TABLES:
         for table_format in TABLE_FORMATS:
             filename = generate_filename(table_title, table_format)
-            current_path = f'{DATA_DIR}/{filename}'
+            current_path = os.path.join(DATA_DIR, filename)
             if os.path.isfile(current_path):
-                new_path = f'{new_archive_dir}/{filename}'
+                new_path = os.path.join(new_archive_dir, filename)
                 os.rename(current_path, new_path)
     print(f'Created the archive directory:\n\t{new_archive_dir}')
 

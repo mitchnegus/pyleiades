@@ -13,7 +13,11 @@ Data can be accessed directly at the EIA website:
 
 __version__ = '0.1.dev'
 
-DATA_DIR = 'pyleiades/data'
-ARCHIVE_DIR = f'{DATA_DIR}/archive'
+import os
+from pyleiades.energies import Energy
+from pyleiades.visuals import Visual
+
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+ARCHIVE_DIR = os.path.join(DATA_DIR, 'archive')
 
 
