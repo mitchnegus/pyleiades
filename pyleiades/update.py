@@ -67,9 +67,9 @@ def include_data_in_archive():
        os.makedirs(new_archive_dir)
     except OSError:
         # Give the user a chance to avoid files being overwritten
-        answer = input("It seems as though you already have the most recent "
-                       "dataset archived already. Would you like to "
-                       "overwrite that information? [y/n] ")
+        answer = input( "It seems as though you already have the most recent "
+                       f"dataset archived already ({new_archive_dir}). Would "
+                        "you like to overwrite that information? [y/n] ")
         if answer[0].lower() != 'y':
             return
     # Move the files to the archive
