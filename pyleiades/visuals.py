@@ -13,6 +13,19 @@ class Visual:
     across energy sources if more than one energy is given. Visualizations
     include histograms, line graphs, pie charts, and animations.
 
+    Attributes
+    ––––––––––
+    data : DataFrame, optional
+        The EIA dataset on which visualizations are based.
+    stat_type : str
+        The type of statistic ('production', 'consumption', 'import' or
+        'export').
+    data_date : str
+        The date identifier of the dataset. (The default value is `None`, which
+        automatically uses the most recently downloaded dataset.)
+    energies : list of Energy object
+        A list of energies from the dataset to be visualized.
+
     Parameters
     ––––––––––
     data : DataFrame, optional
@@ -24,14 +37,14 @@ class Visual:
     """
 
     def __init__(self, data=None, stat_type='consumption', data_date=None):
-        self.complete_data = data
+        self.data = data
         self.stat_type = stat_type
         self.data_date = data_date
         self.energies = []
 
-        self.empty_errmsg = ('No energy histories have been chosen yet for '
+        self._empty_errmsg = ('No energy histories have been chosen yet for '
                              'the visual.')
-        self.sub_errmsg = ('Subject "{}" is not compatible with this visual; '
+        self._subj_errmsg = ('Subject "{}" is not compatible with this visual; '
                            'see documentation for permissible subjects.')
 
     def include_energy(self, *energy_types):
@@ -44,8 +57,8 @@ class Visual:
             The type(s) of energy source to be pulled from the dataset.
         """
         for energy_type in energy_types:
-            energy = Energy(energy_type, stat_type=self.stat_type,
-                            data_date=self.data_date)
+            energy = Energy(energy_type, data=self.data,
+                            stat_type=self.stat_type, data_date=self.data_date)
             self.energies.append(energy)
 
     def linegraph(self, subject, freq='yearly', start_date=None, end_date=None):
@@ -66,7 +79,7 @@ class Visual:
             give only the full year, 'YYYY'.
         """
         if len(self.energies) == 0:
-            raise RuntimeError(self.empty_errmsg)
+            raise RuntimeError(self._empty_errmsg)
 
         # Get data for the selected subject and merge into one dataframe
         if subject == 'totals':
@@ -79,7 +92,7 @@ class Visual:
             subject_data = [energy.extrema('min', freq, start_date, end_date)
                             for energy in self.energies]
         else:
-            raise ValueError(self.sub_errmsg.format(subject))
+            raise ValueError(self._subj_errmsg.format(subject))
         graph_data = pd.concat(subject_data, axis=1)
         graph_data.columns = [energy.energy_type for energy in self.energies]
         dates = graph_data.index

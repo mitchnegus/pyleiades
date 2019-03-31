@@ -12,6 +12,20 @@ class Energy:
     which more than a certain amount of energy was consumed from that source.
     Use this class to extract and return pure data from the dataset.
 
+    Attributes
+    ––––––––––
+    energy_type : str
+        The type of energy source.
+    stat_type : str
+        The type of statistic ('production', 'consumption', 'import' or
+        'export').
+    energy_data : DataFrame
+        The complete set of energy data from the EIA MER.
+    monthly_data : DataFrame
+        All monthly data values from the EIA MER.
+    yearly_data : DataFrame
+        All yearly data values from the EIA MER.
+
     Parameters
     ––––––––––
     energy_type : str
@@ -31,7 +45,6 @@ class Energy:
                  stat_type='consumption', data_date=None):
         self.energy_type = energy_type
         self.stat_type = stat_type
-        self.data_date = data_date
         # Determine energy code from energy source name
         energy_code = name_to_code(energy_type)
 
@@ -43,10 +56,10 @@ class Energy:
         self.energy_data = self._isolate_energy(energy_code, data)
         self.monthly_data, self.yearly_data = self._sep_freqs(self.energy_data)
 
-        self.freq_errmsg = ('Frequency "{}" is not compatible with this data; '
-                            'see documentation for permissible frequencies.')
-        self.extr_errmsg = ('Input "{}" is not recognized as an extrema; '
-                            'try "max" or "min"')
+        self._freq_errmsg = ('Frequency "{}" is not compatible with this data; '
+                             'see documentation for permissible frequencies.')
+        self._extr_errmsg = ('Input "{}" is not recognized as an extrema; '
+                             'try "max" or "min"')
 
     def _isolate_energy(self, energy_code, data):
         """
@@ -167,7 +180,7 @@ class Energy:
         elif freq == 'yearly' or freq == 'cumulative':
             full_data = self.yearly_data
         else:
-            raise ValueError(self.freq_errmsg.format(freq))
+            raise ValueError(self._freq_errmsg.format(freq))
         totals_data = self._daterange(full_data, start_date, end_date)
         # For cumulative totals, take the sum
         if freq == 'cumulative':
@@ -206,7 +219,7 @@ class Energy:
         elif freq == 'yearly':
             full_data = self.yearly_data
         else:
-            raise ValueError(self.freq_errmsg.format(freq))
+            raise ValueError(self._freq_errmsg.format(freq))
         extremum_data = self._daterange(full_data, start_date, end_date)
 
         # Select max or min
@@ -216,7 +229,7 @@ class Energy:
         elif extremum == 'min':
             extremum_val = extremum_data.value.min()
         else:
-            raise ValueError(self.extr_errmsg.format(extremum))
+            raise ValueError(self._extr_errmsg.format(extremum))
         extremum_data = extremum_data[extremum_data.value == extremum_val]
         extremum_date = extremum_data.index[0]
         extreme_value = extremum_data.value[0]
