@@ -13,11 +13,11 @@ class TestVisual:
         assert 'coal' == visual.energies[1].energy_type
         assert nuc_energy_data.equals(nuc_test_data)
 
-    #def test_linegraph_TotalsDefaults(self,testdata):
-    #    valarray = testdata.Value.values
-    #    nuclear_yearly_data = np.array([valarray[7],valarray[20]])
-    #    visual = Visual(data_date='test')
-    #    visual.include_energy('nuclear')
-    #    ax = visual.linegraph('totals')
-    #    nuc_yearly_data = ax.lines[0].get_xydata().T[1]
-    #    assert np.array_equal(nuc_yearly_data,nuclear_yearly_data)
+    def test_linegraph_TotalsDefaults(self,testdata):
+        valarray = testdata.value.values
+        nuc_test_data = np.array([valarray[7],valarray[20]])
+        visual = Visual(stat_type='test')
+        visual.include_energy('nuclear')
+        ax = visual.linegraph('totals')
+        nuc_yearly_data = ax.lines[0].get_xydata().T[1]
+        assert np.array_equal(nuc_yearly_data, nuc_test_data)

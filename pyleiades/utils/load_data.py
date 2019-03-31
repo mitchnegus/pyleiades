@@ -69,6 +69,6 @@ def _format_dataset(data_df):
     column_mapping = {'YYYYMM': 'date_code',
                       'Value': 'value',
                       'Column_Order': 'energy_code'}
-    data_df = data_df[column_mapping.keys()].dropna()
+    data_df = data_df[list(column_mapping.keys())].dropna()
     data_df = data_df.rename(index=str, columns=column_mapping)
     return data_df
