@@ -8,7 +8,7 @@ name_to_code
 date_to_code
     Converts date string into EIA data code.
 """
-
+import datetime
 
 def name_to_code(name):
     """
@@ -25,24 +25,24 @@ def name_to_code(name):
         The code corresponding to the energy source provided.
     """
     key_name = name.lower()
-    Ecodes = {'coal':1,
-              'natural gas':2,
-              'petroleum':3,
-              'fossil fuel':4,
-              'nuclear':5,
-              'hydro':6,
-              'geothermal':7,
-              'solar':8,
-              'wind':9,
-             'biomass':10,
-              'renewable':11,
-              'primary':12}
+    energy_codes = {'coal':1,
+                    'natural gas':2,
+                    'petroleum':3,
+                    'fossil fuel':4,
+                    'nuclear':5,
+                    'hydro':6,
+                    'geothermal':7,
+                    'solar':8,
+                    'wind':9,
+                    'biomass':10,
+                    'renewable':11,
+                    'primary':12}
 
-    if key_name not in Ecodes:
+    if key_name not in energy_codes:
         raise KeyError(f'Key "{key_name}" was not found in the EIA dataset; '
                         'see documentation for implemented energy sources.')
     else:
-        name_code = Ecodes[key_name]
+        name_code = energy_codes[key_name]
     return name_code
 
 
@@ -63,26 +63,39 @@ def date_to_code(date):
     """
     bad_format_err_msg = (f'Date "{date}" was not given in an acceptable '
                            'format; try formatting date as "YYYYMM".')
-    acceptable_separators = ["-", ".", "/", "_"]
+    acceptable_separators = ['-', '.', '/', '_']
 
     # Convert date to code
-    if len(date) == 4: date = date+'01'
     if len(date) == 6:
+        # A date was given as YYYYMM, the correct format
         date_code = date
+    elif len(date) == 4:
+        # Only a year was given, set date to January of the given year
+        date_code = date + '01'
     elif len(date) == 7:
-        if date[4] in acceptable_separators:
-            date_code = date.replace(date[4],'')
-        elif date[2] in acceptable_separators:
-            date_code = (date[3:] + date[:3]).replace(date[2], '')
+        for separator in acceptable_separators[1:]:
+            date = date.replace(separator, acceptable_separators[0])
+        date_list = date.split(acceptable_separators[0])
+        if len(date_list) != 2:
+            raise ValueError(bad_format_err_msg)
+        # Check whether the first or second entry is the year
+        if len(date_list[0]) == 4:
+            date_code = ''.join(date_list)
+        elif len(date_list[1]) == 4:
+            date_code = ''.join(date_list[::-1])
+        else:
+            raise ValueError(bad_format_err_msg)
     else:
         raise ValueError(bad_format_err_msg)
 
     # Check reasonability of date provided
     try:
-        year = int(float(date_code[0:4]))
-        month = int(float(date_code[4:6]))
-        if year < 1900 or year > 3000:
-            raise ValueError('No data exists for this time period.')
+        int(date_code)
+        year = int(date_code[:4])
+        month = int(date_code[4:])
+        if year < 1900 or year > datetime.datetime.now().year:
+            raise ValueError('Data only exists from the middle of the 20th '
+                             'century to the present.')
         if month > 13 or month < 1:  # 13 denotes full year sum
             raise ValueError('A month must be given as a number 1-12')
     except:

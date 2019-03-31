@@ -5,17 +5,14 @@ Functions
 –––––––––
 load_dataset
     Loads an EIA MER dataset from a csv file.
-get_default
-    Finds the default MER dataset csv file.
-find_most_recent
-    Finds the most MER dataset csv file.
 """
+import os
 import numpy as np
 import pandas as pd
-import os
 from glob import glob
+from pyleiades import DATA_DIR, ARCHIVE_DIR
 
-def load_dataset(dataset_date='default', dataset_type=None):
+def load_dataset(dataset_date=None, dataset_type=None):
     """
     Loads an EIA MER dataset from a csv file.
 
@@ -25,8 +22,8 @@ def load_dataset(dataset_date='default', dataset_type=None):
         The date identifier of the dataset; 'default' and 'newest' are current
         options (the ability to call specific dataset dates to be added).
     dataset_type : str
-        The type of dataset to be selected; can be either 'production',
-        'consumption', 'import', or 'export' (set as None for default dataset)
+        The type of the dataset to be selected; can be either 'production',
+        'consumption', 'import', or 'export' (set as None for default dataset).
 
     Returns
     –––––––
@@ -35,70 +32,43 @@ def load_dataset(dataset_date='default', dataset_type=None):
         the energy quantitity in quadrillion BTUs, and the code denoting energy
         type
     """
-    # Get the dataset corresponding to the date identifier given
-    EIA_MER_DATA_PATH = os.getcwd()+'/data/'
-    if dataset_date == 'default':
-        EIA_MER_DATA_FILE = get_default()
-    elif dataset_date == 'newest':
-        EIA_MER_DATA_FILE = get_newest(dataset_type)
-    elif dataset_date == 'test':
-        EIA_MER_DATA_FILE = get_test()
+    # Get the dataset file corresponding to the date identifier given
+    if dataset_date is None:
+        data_dir = DATA_DIR
     else:
-        raise ValueError('"Default" and "Newest" are the only dataset date '
-                         'identifiers currently implemented.')
-    FULL_PATH = EIA_MER_DATA_PATH+EIA_MER_DATA_FILE
-    data_df = pd.read_csv(FULL_PATH, na_values='Not Available', dtype={'YYYYMM':str})
-
-    # Process the dataset (eliminate unnecessary columns, change headings)
-    data_df = data_df[['YYYYMM', 'Value', 'Column_Order']]
-    data_df = data_df.rename(index=str, columns={'YYYYMM':'Date_code', 'Column_Order':'E_code'})
-    data_df.dropna(inplace=True)
+        data_dir = _find_directory_for_date(dataset_date)
+    if dataset_type is None:
+        dataset_type = 'consumption'
+    data_path = _find_dataset(data_dir, dataset_type)
+    # Load and process the dataset file
+    data_df = pd.read_csv(data_path, na_values='Not Available',
+                          dtype={'YYYYMM': str})
+    data_df = _format_dataset(data_df)
     return data_df
 
-def get_default():
-    """
-    Gets the filename of the default dataset from your filesystem.
+def _find_directory_for_date(date):
+        """Find the archived directory for a given date, if it exists."""
+        dated_dir = f'{ARCHIVE_DIR}/EIA_MER_{date}'
+        if os.path.isdir(dated_dir):
+            return dated_dir
+        else:
+            raise ValueError(f"The dataset for the date '{date}' could not be "
+                              "found.")
 
-    Returns
-    –––––––
-    str
-        The filename of the default dataset.
-    """
-    return 'EIA_MER.csv'
+def _find_dataset(data_dir, type):
+    """Find the filename for the given dataset type, if it exists."""
+    data_filename = f'EIA_MER_{dataset_type}'
+    data_path = f'{data_dir}/{data_filename}'
+    if os.path.isfile(data_path):
+        return data_path
+    else:
+        raise ValueError(f"The '{type}' type dataset could not be found.")
 
-def get_newest(dataset_type):
-    """
-    Gets the filename of the most recent dataset from your filesystem.
-
-    Returns
-    –––––––
-    str
-        The filename of the most recently downloaded dataset.
-    """
-    labeldict = {'production':'prod',
-                 'consumption':'cons',
-                 'import':'imp',
-                 'export':'exp'}
-    label = labeldict[dataset_type]
-
-    directories = [directory.split('/')[1] for directory in glob('data/*/')]
-    dirdates = np.array([int(directory[-6:]) for directory in directories])
-    newestdir = directories[np.argmax(dirdates)]
-    basename = newestdir.split('/')[-1]
-    typelist = basename.split('_')
-    typelist.insert(2, label)
-    typename = '_'.join(typelist)
-    newestdatafile = newestdir+'/'+typename+'.csv'
-    return newestdatafile
-
-def get_test():
-    """
-    Gets the filename of the test dataset.
-
-    Returns
-    –––––––
-    str
-        The filename of the test dataset.
-    """
-    return 'test_data/test_EIA_MER.csv'
-
+def _format_dataset(data_df):
+    """Format the dataset for further analysis."""
+    column_mapping = {'YYYYMM': 'date_code',
+                      'Value': 'value',
+                      'Column_Order': 'energy_code'}
+    data_df = data_df[column_mapping.keys()].dropna()
+    data_df = data_df.rename(index=str, columns=column_mapping)
+    return data_df

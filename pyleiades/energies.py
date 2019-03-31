@@ -23,54 +23,51 @@ class Energy:
         The EIA dataset to be used. Must be three columns: date, energy
         quantity, and energy code. If omitted, use the default dataset.
     data_date : str
-        The date identifier of the dataset; 'default' and 'newest' are
-        current options (the ability to call specific dataset dates to be
-        added).
+        The date identifier of the dataset. (The default value is `None`, which
+        automatically uses the most recently downloaded dataset.)
     """
 
     def __init__(self, energy_type, stat_type='consumption',
-                 data=pd.DataFrame(), data_date='default'):
+                 data=None, data_date=None):
         self.energy_type = energy_type
-        # Determine Ecode from energy source name
-        E_code = name_to_code(energy_type)
+        # Determine energy code from energy source name
+        energy_code = name_to_code(energy_type)
 
         # Use default dataset if dataset argument is omitted
-        if data.empty:
-            data = load_dataset(dataset_date=data_date,dataset_type=stat_type)
+        if data is None:
+            data = load_dataset(dataset_date=data_date, dataset_type=stat_type)
 
         # Isolate this energy's data, separate frequencies, and format the data
-        self.E_data = self._isolate_energy(E_code,data)
-        self.monthly_data, self.yearly_data = self._sep_freqs(self.E_data)
-        for data_df in self.monthly_data,self.yearly_data:
-            data_df.set_index('Date_code',inplace=True)
+        self.energy_data = self._isolate_energy(energy_code, data)
+        self.monthly_data, self.yearly_data = self._sep_freqs(energy_data)
 
         self.freq_errmsg = ('Frequency "{}" is not compatible with this data; '
                             'see documentation for permissible frequencies.')
         self.extr_errmsg = ('Input "{}" is not recognized as an extrema; '
                             'try "max" or "min"')
 
-    def _isolate_energy(self,E_code,data):
+    def _isolate_energy(self, energy_code, data):
         """
         Isolate one type of energy in the given dataset.
 
         Parameters
         ––––––––––
-        E_code : int
+        energy_code : int
             The energy code corresponding to the energy source to be selected.
         data : DataFrame
             The dataset containing all energy values across energy sources.
 
         Returns
         –––––––
-        E_data : DataFrame
+        energy_data : DataFrame
             A trimmed version of the original dataset, now with only the
             selected energy source. The energy code column is removed.
         """
-        E_data = data[data.E_code == E_code]
-        E_data = E_data[['Date_code','Value']]
-        return E_data
+        energy_data = data[data.energy_code == energy_code]
+        return energy_data[['date_code', 'value']]
 
-    def _sep_freqs(self,data):
+    @staticmethod
+    def _sep_freqs():
         """
         Separate the data into monthly and yearly intervals.
 
@@ -86,15 +83,19 @@ class Energy:
         yearly_data : DataFrame
             A subset of the data with the energy values reported yearly.
         """
-        # Monthly totals
-        monthly_data = data[data.Date_code.str[-2:]!='13']
-        monthly_data = monthly_data.assign(Date=monthly_data.Date_code)
-        # Yearly totals
-        yearly_data = data[data.Date_code.str[-2:]=='13']
-        yearly_data = yearly_data.assign(Date=yearly_data.Date_code.str[:-2])
-        return monthly_data,yearly_data
+        # Separate monthly and yearly totals
+        monthly_data = data[data.date_code.str[-2:]!='13']
+        yearly_data = data[data.date_code.str[-2:]=='13']
+        # Index the dataframes by the date
+        for df in monthly_data, yearly_data:
+            df.rename(index=str, columns={'date_code': 'date'}, inplace=True)
+            df.set_index('date', inplace=True);
+        # Remove date code '13' from end of yearly dates
+        yearly_data['date'] = yearly_data.date_code.str.slice(stop=4)
+        return monthly_data, yearly_data
 
-    def _daterange(self,data,start_date,end_date):
+    @staticmethod
+    def _daterange(data, start_date, end_date):
         """
         Resize the dataset to cover only the date range specified.
 
@@ -126,12 +127,12 @@ class Energy:
         bounded_data = half_bounded_data[half_bounded_data.index <= end_date]
         return bounded_data
 
-    def totals(self,freq='yearly',start_date=None,end_date=None,):
+    def totals(self, freq='yearly', start_date=None, end_date=None, ):
         """
         Get the energy statistic totals over a given period.
 
         This method aggregates energy statistic totals according to a user
-        defined frequency--either monthly, yearly, or cumulatively. Data is
+        defined frequency—either monthly, yearly, or cumulatively. Data is
         collected for the entire dataset unless specific dates are given.
         When dates are provided, the totals are only returned on that time
         interval, with inclusive starting and ending dates. If data at the
@@ -166,11 +167,9 @@ class Energy:
         else:
             raise ValueError(self.freq_errmsg.format(freq))
         totals_data = self._daterange(full_data, start_date, end_date)
-        totals_data.set_index('Date', inplace=True)
-
         # For cumulative totals, take the sum
         if freq == 'cumulative':
-            totals_data = totals_data.Value.sum()
+            totals_data = totals_data.value.sum()
         return totals_data
 
     def extrema(self, extremum, freq='yearly', start_date=None, end_date=None):
@@ -211,15 +210,15 @@ class Energy:
         # Select max or min
         extremum = extremum.lower()[:3]
         if extremum == 'max':
-            extremum_val = extremum_data.Value.max()
+            extremum_val = extremum_data.value.max()
         elif extremum == 'min':
-            extremum_val = extremum_data.Value.min()
+            extremum_val = extremum_data.value.min()
         else:
             raise ValueError(self.extr_errmsg.format(extremum))
-        extremum_data = extremum_data[extremum_data.Value == extremum_val]
-        extremum_date = extremum_data['Date'][0]
-        extreme_value = extremum_data['Value'][0]
-        return extremum_date,extreme_value
+        extremum_data = extremum_data[extremum_data.value == extremum_val]
+        extremum_date = extremum_data.date[0]
+        extreme_value = extremum_data.value[0]
+        return extremum_date, extreme_value
 
     def more_than(self, amount, start_date, end_date, interval):
         """
