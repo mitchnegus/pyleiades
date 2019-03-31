@@ -65,7 +65,7 @@ class Visual:
             underscores, or forward slashes); for 'yearly' or 'cumulative',
             give only the full year, 'YYYY'.
         """
-        if len(self.energy_data) == 0:
+        if len(self.energies) == 0:
             raise RuntimeError(self.empty_errmsg)
 
         # Get data for the selected subject and merge into one dataframe
@@ -81,7 +81,7 @@ class Visual:
         else:
             raise ValueError(self.sub_errmsg.format(subject))
         graph_data = pd.concat(subject_data, axis=1)
-        graph_data.columns = [energy.energy_type for energy in self.energy_data]
+        graph_data.columns = [energy.energy_type for energy in self.energies]
         graph_data.index = graph_data.index.astype(int)
 
         # Generate the plot
