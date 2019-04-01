@@ -102,7 +102,7 @@ class Visual:
         for column in graph_data.columns:
             data_points = len(graph_data)
             ax.plot(range(data_points), graph_data[column])
-        ax.set_title('Energy Consumption History')
+        ax.set_title(f'Energy {self.stat_type} history')
         if freq == 'yearly':
             interval = 10
             xticklabels = dates[::interval]
