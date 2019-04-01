@@ -10,6 +10,19 @@ date_to_code
 """
 import datetime
 
+ENERGY_CODES = {'coal':1,
+                'natural gas':2,
+                'petroleum':3,
+                'fossil fuel':4,
+                'nuclear':5,
+                'hydro':6,
+                'geothermal':7,
+                'solar':8,
+                'wind':9,
+                'biomass':10,
+                'renewable':11,
+                'primary':12}
+
 def name_to_code(name):
     """
     Convert an energy source name to its corresponding EIA dataset numeric code.
@@ -25,24 +38,13 @@ def name_to_code(name):
         The code corresponding to the energy source provided.
     """
     key_name = name.lower()
-    energy_codes = {'coal':1,
-                    'natural gas':2,
-                    'petroleum':3,
-                    'fossil fuel':4,
-                    'nuclear':5,
-                    'hydro':6,
-                    'geothermal':7,
-                    'solar':8,
-                    'wind':9,
-                    'biomass':10,
-                    'renewable':11,
-                    'primary':12}
 
-    if key_name not in energy_codes:
-        raise KeyError(f"Key '{name}' was not found in the EIA dataset; see "
-                        "the documentation for implemented energy sources.")
+    if key_name not in ENERGY_CODES:
+        raise KeyError(f"Key '{name}' was not found in the EIA dataset. "
+                        "Implemented energy sources are: "
+                       f"{list(ENERGY_CODES.keys())}")
     else:
-        name_code = energy_codes[key_name]
+        name_code = ENERGY_CODES[key_name]
     return name_code
 
 
