@@ -2,7 +2,7 @@ import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 from pyleiades.energies import Energy
-
+from pyleiades.utils import inspection
 
 class Visual:
     """
@@ -56,10 +56,10 @@ class Visual:
                 raise ValueError("The input energy type(s) must be a single "
                                  "string or a list.")
 
-        self._empty_errmsg = ('No energy histories have been chosen yet for '
-                             'the visual.')
-        self._subj_errmsg = ('Subject "{}" is not compatible with this visual; '
-                           'see documentation for permissible subjects.')
+        self._empty_errmsg = ("No energy histories have been chosen yet for "
+                              "the visual.")
+        self._subj_errmsg = ("Subject '{}' is not compatible with this visual; "
+                             "see documentation for permissible subjects.")
 
     def include_energy(self, *energy_types):
         """
@@ -82,7 +82,8 @@ class Visual:
         Parameters
         ––––––––––
         subject : str
-            The subject of the line graph ('totals','maxima', or 'minima').
+            The subject of the line graph, corresponding to a method of the
+            `Energy` object (e.g. 'totals','maxima', or 'minima').
         freq : str
             The frequency for checking extrema ('monthly' or 'yearly').
         start_date, end_date : str
@@ -94,21 +95,17 @@ class Visual:
         """
         if len(self.energies) == 0:
             raise RuntimeError(self._empty_errmsg)
+        if not inspection.check_if_method(self.energies[0], subject):
+            raise ValueError(self._subj_errmsg.format(subject))
 
         # Get data for the selected subject and merge into one dataframe
-        if subject == 'totals':
-            subject_data = [energy.totals(freq, start_date, end_date)
-                            for energy in self.energies]
-        elif subject == 'maxima':
-            subject_data = [energy.extrema('max', freq, start_date, end_date)
-                            for energy in self.energies]
-        elif subject == 'minima':
-            subject_data = [energy.extrema('min', freq, start_date, end_date)
-                            for energy in self.energies]
-        else:
-            raise ValueError(self._subj_errmsg.format(subject))
+        subject_data = []
+        for energy in self.energies:
+            energy_method = getattr(energy, subject);
+            energy_subject_data = energy_method(freq, start_date, end_date)
+            energy_subject_data.rename({'values': energy.energy_type})
+            subject_data.append(energy_subject_data)
         graph_data = pd.concat(subject_data, axis=1)
-        graph_data.columns = [energy.energy_type for energy in self.energies]
         dates = graph_data.index
 
         # Generate the plot
