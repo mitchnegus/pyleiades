@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import pyleiades as eia
 import os
 from matplotlib import pyplot as plt
