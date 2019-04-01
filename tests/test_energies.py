@@ -10,6 +10,12 @@ class TestEnergy:
         nuc_energy_data = nuc.energy_data.value
         assert nuc_energy_data.equals(nuc_test_data)
 
+    def test_default_data(self, testdata, testvals):
+        nuc_test_data = testdata.iloc[7:].value
+        nuc = Energy('nuclear')
+        nuc_energy_data = nuc.energy_data.value.values
+        assert np.array_equal(nuc_energy_data, nuc_test_data)
+
     def test_monthly_data(self, testdata, testvals):
         nuc_test_data = np.concatenate([testvals[8:20], testvals[21:23]])
         nuc = Energy('nuclear', data=testdata)
