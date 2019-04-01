@@ -132,10 +132,12 @@ class Energy:
             start_date = data.index.min()
         else:
             start_date = date_to_code(start_date)
+            start_date = start_date[:len(data.index[0])]
         if end_date is None:
             end_date = data.index.max()
         else:
             end_date = date_to_code(end_date)
+            end_date = end_date[:len(data.index[0])]
 
         # Adjust dataset boundaries 
         half_bounded_data = data[data.index >= start_date]
@@ -186,6 +188,20 @@ class Energy:
         if freq == 'cumulative':
             totals_data = totals_data.value.sum()
         return totals_data
+
+    def maxima(self, freq='yearly', start_date=None, end_date=None):
+        """
+        Get the maximum energy consumed over a given period (see extrema).
+        """
+        self.extrema('max', freq=freq, start_date=start_date,
+                     end_date=end_date)
+
+    def minima(self, freq='yearly', start_date=None, end_date=None):
+        """
+        Get the minimum energy consumed over a given period (see extrema).
+        """
+        self.extrema('min', freq=freq, start_date=start_date,
+                     end_date=end_date)
 
     def extrema(self, extremum, freq='yearly', start_date=None, end_date=None):
         """

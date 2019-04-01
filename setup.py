@@ -38,6 +38,6 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/mitchnegus/pyleiades',
     packages=['pyleiades', 'pyleiades.utils'],
-    scripts=['scripts/update_eia_data.py'],
+    scripts=['scripts/update_eia_data.py', 'scripts/pyleiades-demo.py'],
     include_package_data=True
 )

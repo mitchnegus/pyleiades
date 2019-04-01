@@ -28,19 +28,33 @@ class Visual:
 
     Parameters
     ––––––––––
+    energy_types : str or list of str, optional
+        A list of one or more energies to be displayed.
     data : DataFrame, optional
         The EIA dataset to be used. Must be three columns: date, energy
         quantity, and energy code. If omitted, use the default dataset.
+    stat_type : str
+        The type of statistic to be displayed ('production', 'consumption',
+        'import', or 'export').
     data_date : str
         The date identifier of the dataset. (The default value is `None`, which
         automatically uses the most recently downloaded dataset.)
     """
 
-    def __init__(self, data=None, stat_type='consumption', data_date=None):
+    def __init__(self, energy_types=None, data=None, stat_type='consumption',
+                 data_date=None):
         self.data = data
         self.stat_type = stat_type
         self.data_date = data_date
         self.energies = []
+        if energy_types is not None:
+            if type(energy_types) is str:
+                self.include_energy(energy_types)
+            elif type(energy_types) is list:
+                self.include_energy(*energy_types)
+            else:
+                raise ValueError("The input energy type(s) must be a single "
+                                 "string or a list.")
 
         self._empty_errmsg = ('No energy histories have been chosen yet for '
                              'the visual.')
