@@ -75,6 +75,19 @@ class Visual:
                             stat_type=self.stat_type, data_date=self.data_date)
             self.energies.append(energy)
 
+    @staticmethod
+    def _aggregate_data(energies, subject, freq, start_date, end_date):
+        """Aggregate data for graphing."""
+        agg_data = []
+        for energy in energies:
+            energy_method = getattr(energy, subject);
+            subject_data = energy_method(freq, start_date, end_date)
+            subject_data.rename(index=str,
+                                columns={'value': energy.energy_type},
+                                inplace=True)
+            agg_data.append(subject_data)
+        return pd.concat(agg_data, axis=1)
+
     def linegraph(self, subject, freq='yearly', start_date=None, end_date=None):
         """
         Make a line graph of the chosen energy source histories.
@@ -99,13 +112,8 @@ class Visual:
             raise ValueError(self._subj_errmsg.format(subject))
 
         # Get data for the selected subject and merge into one dataframe
-        subject_data = []
-        for energy in self.energies:
-            energy_method = getattr(energy, subject);
-            energy_subject_data = energy_method(freq, start_date, end_date)
-            energy_subject_data.rename({'values': energy.energy_type})
-            subject_data.append(energy_subject_data)
-        graph_data = pd.concat(subject_data, axis=1)
+        graph_data = self._aggregate_data(self.energies, subject, freq,
+                                          start_date, end_date)
         dates = graph_data.index
 
         # Generate the plot
@@ -113,16 +121,41 @@ class Visual:
         for column in graph_data.columns:
             data_points = len(graph_data)
             ax.plot(range(data_points), graph_data[column], label=column)
+        ax.legend()
         ax.set_title(f'Energy {self.stat_type} history')
+        ax.set_ylabel('Energy [QBTU]')
+        ax.set_xlim(0, data_points)
         if freq == 'yearly':
             interval = 10
-            xticklabels = dates[::interval]
         elif freq == 'monthly':
             interval = 120
-            xticklabels = [f'{_[-2:]}/{_[:-2]}' for _ in dates[::interval]]
-        ax.set_xlim(0, data_points)
-        ax.set_xticks(range(0, data_points, interval))
+        xticks, xticklabels = configure_tickmarks(dates, interval)
+        ax.set_xticks(xticks)
         ax.set_xticklabels(xticklabels)
-        ax.set_ylabel('Energy [QBTU]')
-        ax.legend()
         return ax
+
+def configure_tickmarks(labels, interval):
+    """
+    Given labels and a set interval, generate tickmarks and ticklabels.
+
+    Parameters
+    ––––––––––
+    labels : list
+        The complete list of tickmark labels.
+    interval : int
+        The step size to use between tickmarks.
+
+    Returns
+    –––––––
+    ticks : sequence
+        A sequence of values to use as tickmarks.
+    ticklabels : sequence
+        A sequence of values to use as tickmark labels.
+    """
+    labels = list(labels)
+    ticks = range(0, len(labels), interval)
+    if len(labels[0]) == 6:
+        labels = [f'{_[-2:]}/{_[:-2]}' for _ in labels]
+    ticklabels = labels[::interval]
+    return ticks, ticklabels
+
