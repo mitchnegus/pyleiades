@@ -30,13 +30,13 @@ class Energy:
     ––––––––––
     energy_type : str
         The type of energy source to be pulled from the dataset.
-    stat_type : str
-        The type of statistic to be collected ('production', 'consumption',
-        'import', or 'export').
     data : DataFrame, optional
         The EIA dataset to be used. Must be three columns: date, energy
         quantity, and energy code. If omitted, use the default dataset.
-    data_date : str
+    stat_type : str
+        The type of statistic to be collected ('production', 'consumption',
+        'import', or 'export').
+    data_date: str
         The date identifier of the dataset. (The default value is `None`, which
         automatically uses the most recently downloaded dataset.)
     """
