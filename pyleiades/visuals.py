@@ -109,6 +109,7 @@ class Visual:
         elif freq == 'monthly':
             interval = 120
             xticklabels = [f'{_[-2:]}/{_[:-2]}' for _ in dates[::interval]]
+        ax.set_xlim(0, data_points)
         ax.set_xticks(range(0, data_points, interval))
         ax.set_xticklabels(xticklabels)
         ax.set_ylabel('Energy [QBTU]')
