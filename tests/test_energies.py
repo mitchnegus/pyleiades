@@ -66,6 +66,20 @@ class TestEnergy:
         with pytest.raises(ValueError):
             nuc_cumulative_total = nuc.totals('test')
 
+    def test_maxima_month(self, testdata):
+        nuc_test_max_month, nuc_test_max_val = '197310', 0.20
+        nuc = Energy('nuclear', data=testdata)
+        nuc_max_month, nuc_max_val = nuc.maxima('monthly')
+        assert nuc_max_month == nuc_test_max_month
+        assert nuc_max_val == nuc_test_max_val
+
+    def test_minima_month(self, testdata):
+        nuc_test_min_month, nuc_test_min_val = '197303', 0.09
+        nuc = Energy('nuclear', data=testdata)
+        nuc_min_month, nuc_min_val = nuc.minima('monthly')
+        assert nuc_min_month == nuc_test_min_month
+        assert nuc_min_val == nuc_test_min_val
+
     def test_extrema_maximum_month(self, testdata):
         nuc_test_max_month, nuc_test_max_val = '197310', 0.20
         nuc = Energy('nuclear', data=testdata)

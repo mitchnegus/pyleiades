@@ -193,15 +193,17 @@ class Energy:
         """
         Get the maximum energy consumed over a given period (see extrema).
         """
-        self.extrema('max', freq=freq, start_date=start_date,
-                     end_date=end_date)
+        maxima = self.extrema('max', freq=freq, start_date=start_date,
+                              end_date=end_date)
+        return maxima
 
     def minima(self, freq='yearly', start_date=None, end_date=None):
         """
         Get the minimum energy consumed over a given period (see extrema).
         """
-        self.extrema('min', freq=freq, start_date=start_date,
-                     end_date=end_date)
+        minima = self.extrema('min', freq=freq, start_date=start_date,
+                              end_date=end_date)
+        return minima
 
     def extrema(self, extremum, freq='yearly', start_date=None, end_date=None):
         """
