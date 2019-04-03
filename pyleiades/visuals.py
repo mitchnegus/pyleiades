@@ -58,8 +58,9 @@ class Visual:
 
         self._empty_errmsg = ("No energy histories have been chosen yet for "
                               "the visual.")
-        self._subj_errmsg = ("Subject '{}' is not compatible with this visual; "
-                             "see documentation for permissible subjects.")
+        self._freq_errmsg = ("Frequency '{}' is not compatible with this "
+                             "visual; see documentation for permissible "
+                             "frequency values.")
 
     def include_energy(self, *energy_types):
         """
@@ -75,56 +76,51 @@ class Visual:
                             stat_type=self.stat_type, data_date=self.data_date)
             self.energies.append(energy)
 
-    @staticmethod
-    def _aggregate_data(energies, subject, freq, start_date, end_date):
-        """Aggregate data for graphing."""
-        agg_data = []
-        for energy in energies:
-            energy_method = getattr(energy, subject);
-            subject_data = energy_method(freq, start_date, end_date)
-            subject_data.rename(index=str,
-                                columns={'value': energy.energy_type},
-                                inplace=True)
-            agg_data.append(subject_data)
-        return pd.concat(agg_data, axis=1)
-
-    def linegraph(self, subject, freq='yearly', start_date=None, end_date=None):
+    def linegraph(self, ax=None, freq='yearly', start_date=None,
+                  end_date=None,):
         """
         Make a line graph of the chosen energy source histories.
 
         Parameters
         ––––––––––
-        subject : str
-            The subject of the line graph, corresponding to a method of the
-            `Energy` object (e.g. 'totals','maxima', or 'minima').
         freq : str
-            The frequency for checking extrema ('monthly' or 'yearly').
+            The frequency for plotting data points ('monthly' or 'yearly').
         start_date, end_date : str
             The user specified starting and ending dates for the dataset
             (both inclusive); for 'monthly', acceptable formats are 'YYYYMM',
             'YYYY-MM', or 'MM-YYYY' (dashes can be substituted for periods,
             underscores, or forward slashes); for 'yearly' or 'cumulative',
             give only the full year, 'YYYY'.
+        ax : Axes object, optional
+            A set of axes on which to draw the visual. (If not provided, a new
+            set of axes are created.)
         """
+        # Input checks
         if len(self.energies) == 0:
             raise RuntimeError(self._empty_errmsg)
-        if not inspection.check_if_method(self.energies[0], subject):
-            raise ValueError(self._subj_errmsg.format(subject))
+        if freq not in ('monthly', 'yearly'):
+            raise ValueError(self._freq_errmsg.format(freq))
 
         # Get data for the selected subject and merge into one dataframe
-        graph_data = self._aggregate_data(self.energies, subject, freq,
-                                          start_date, end_date)
-        dates = graph_data.index
+        totals = pd.DataFrame()
+        for energy in self.energies:
+            energy_totals = energy.totals(freq, start_date, end_date)
+            energy_totals.rename(index=str,
+                                 columns={'value': energy.energy_type},
+                                 inplace=True)
+            totals = pd.concat([totals, energy_totals], axis=1)
+        dates = totals.index
 
         # Generate the plot
-        fig, ax = plt.subplots(figsize=(10,6))
-        for column in graph_data.columns:
-            data_points = len(graph_data)
-            ax.plot(range(data_points), graph_data[column], label=column)
+        if ax is None:
+            fig, ax = plt.subplots(figsize=(10,6))
+        for column in totals.columns:
+            npoints = len(totals)
+            ax.plot(range(npoints), totals[column], label=column)
         ax.legend()
-        ax.set_title(f'Energy {self.stat_type} history')
+        ax.set_title(f'Energy {self.stat_type} ({freq})')
         ax.set_ylabel('Energy [QBTU]')
-        ax.set_xlim(0, data_points)
+        ax.set_xlim(0, npoints)
         if freq == 'yearly':
             interval = 10
         elif freq == 'monthly':

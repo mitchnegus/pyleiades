@@ -36,19 +36,13 @@ class TestVisual:
     def test_linegraph_no_energies(self, testdata):
         visual = Visual(data=testdata)
         with pytest.raises(RuntimeError):
-            ax = visual.linegraph('totals')
-
-    def test_linegraph_invalid_subject(self, testdata):
-        visual = Visual(data=testdata)
-        visual.include_energy('nuclear')
-        with pytest.raises(ValueError):
-            ax = visual.linegraph('test')
+            ax = visual.linegraph()
 
     def test_linegraph_default_totals(self, testdata, testvals):
         nuc_test_totals = np.array([testvals[7], testvals[20]])
         visual = Visual(data=testdata)
         visual.include_energy('nuclear')
-        ax = visual.linegraph('totals')
+        ax = visual.linegraph()
         nuc_default_totals = ax.lines[0].get_xydata().T[1]
         assert np.array_equal(nuc_default_totals, nuc_test_totals)
 
@@ -56,7 +50,7 @@ class TestVisual:
         nuc_test_totals = np.array([testvals[7], testvals[20]])
         visual = Visual(data=testdata)
         visual.include_energy('nuclear')
-        ax = visual.linegraph('totals', freq='yearly')
+        ax = visual.linegraph(freq='yearly')
         nuc_yearly_totals = ax.lines[0].get_xydata().T[1]
         assert np.array_equal(nuc_yearly_totals, nuc_test_totals)
 
@@ -64,6 +58,6 @@ class TestVisual:
         nuc_test_totals = np.concatenate([testvals[8:20], testvals[21:23]])
         visual = Visual(data=testdata)
         visual.include_energy('nuclear')
-        ax = visual.linegraph('totals', freq='monthly')
+        ax = visual.linegraph(freq='monthly')
         nuc_monthly_totals = ax.lines[0].get_xydata().T[1]
         assert np.array_equal(nuc_monthly_totals, nuc_test_totals)
