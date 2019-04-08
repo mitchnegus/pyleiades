@@ -155,7 +155,7 @@ The syntax is again similar to that of the `Energy` object's `totals` method.
 Here's an example:
 
 ```
-visual.linegraph(freq='monthly', start_date='1970')
+visual.linegraph(freq='yearly', start_date='1970')
 ```
 
 ![line graph comparing coal, nuclear, and renewable energy consumption since 1970](pyleiades/fig/demo-plot.png)
