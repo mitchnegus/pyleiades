@@ -7,7 +7,7 @@ class TestLoadDataset:
         test_df = load_data.load_dataset()
         assert len(test_df) == 23
         assert test_df.value.iloc[0] == 1.1
-        assert list(test_df.columns) == ['date_code', 'value', 'energy_code']
+        assert list(test_df.columns) == ['date', 'value', 'energy_type']
 
     def test_load_dataset_specific_date(self):
         test_df = load_data.load_dataset(dataset_date='test')

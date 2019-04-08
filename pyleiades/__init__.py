@@ -24,4 +24,3 @@ with open(os.path.join(package_dir, '_version')) as version_file:
 DATA_DIR = os.path.join(package_dir, 'data')
 ARCHIVE_DIR = os.path.join(DATA_DIR, 'archive')
 
-

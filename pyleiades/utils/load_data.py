@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 from glob import glob
 import pyleiades
+from .code_conversion import code_to_name, code_to_period
 
 def load_dataset(dataset_date=None, dataset_type=None):
     """
@@ -62,13 +63,16 @@ def _find_dataset(data_dir, dataset_type):
     if os.path.isfile(data_path):
         return data_path
     else:
-        raise ValueError(f"The '{dataset_type}' type dataset could not be found.")
+        raise ValueError(f"The '{dataset_type}' type dataset could not be "
+                          "found.")
 
 def _format_dataset(data_df):
     """Format the dataset for further analysis."""
-    column_mapping = {'YYYYMM': 'date_code',
+    column_mapping = {'YYYYMM': 'date',
                       'Value': 'value',
-                      'Column_Order': 'energy_code'}
+                      'Column_Order': 'energy_type'}
     data_df = data_df[list(column_mapping.keys())].dropna()
     data_df = data_df.rename(index=str, columns=column_mapping)
+    data_df.energy_type = data_df.energy_type.map(code_to_name)
+    data_df.date = data_df.date.map(code_to_period)
     return data_df

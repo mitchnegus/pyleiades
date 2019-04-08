@@ -1,8 +1,19 @@
 import pytest
 import numpy as np
+import pandas as pd
 from pyleiades.energies import Energy
 
 class TestEnergy:
+
+    def test_ignore_case(self, testdata):
+        nuc_test_data = testdata.iloc[7:].value
+        nuc = Energy('Nuclear', data=testdata)
+        nuc_energy_data = nuc.energy_data.value
+        assert nuc_energy_data.equals(nuc_test_data)
+
+    def test_invalid_energy(self, testdata):
+        with pytest.raises(ValueError):
+            Energy('test', data=testdata)
 
     def test_isolate_energy(self, testdata):
         nuc_test_data = testdata.iloc[7:].value
@@ -67,28 +78,28 @@ class TestEnergy:
             nuc_cumulative_total = nuc.totals('test')
 
     def test_maxima_month(self, testdata):
-        nuc_test_max_month, nuc_test_max_val = '197310', 0.20
+        nuc_test_max_month, nuc_test_max_val = pd.Period('197310', 'M'), 0.20
         nuc = Energy('nuclear', data=testdata)
         nuc_max_month, nuc_max_val = nuc.maxima('monthly')
         assert nuc_max_month == nuc_test_max_month
         assert nuc_max_val == nuc_test_max_val
 
     def test_minima_month(self, testdata):
-        nuc_test_min_month, nuc_test_min_val = '197303', 0.09
+        nuc_test_min_month, nuc_test_min_val = pd.Period('197303', 'M'), 0.09
         nuc = Energy('nuclear', data=testdata)
         nuc_min_month, nuc_min_val = nuc.minima('monthly')
         assert nuc_min_month == nuc_test_min_month
         assert nuc_min_val == nuc_test_min_val
 
     def test_extrema_maximum_month(self, testdata):
-        nuc_test_max_month, nuc_test_max_val = '197310', 0.20
+        nuc_test_max_month, nuc_test_max_val = pd.Period('197310', 'M'), 0.20
         nuc = Energy('nuclear', data=testdata)
         nuc_max_month, nuc_max_val = nuc.extrema('max', 'monthly')
         assert nuc_max_month == nuc_test_max_month
         assert nuc_max_val == nuc_test_max_val
 
     def test_extrema_minimum_month(self, testdata):
-        nuc_test_min_month, nuc_test_min_val = '197303', 0.09
+        nuc_test_min_month, nuc_test_min_val = pd.Period('197303', 'M'), 0.09
         nuc = Energy('nuclear', data=testdata)
         nuc_min_month, nuc_min_val = nuc.extrema('min', 'monthly')
         assert nuc_min_month == nuc_test_min_month
@@ -96,14 +107,14 @@ class TestEnergy:
 
     def test_extrema_maximum_year(self, testdata):
         valarray = testdata.value.values
-        nuc_test_max_year, nuc_test_max_val = '1973', 1.30
+        nuc_test_max_year, nuc_test_max_val = pd.Period('1973', 'Y'), 1.30
         nuc = Energy('nuclear', data=testdata)
         nuc_max_year, nuc_max_val = nuc.extrema('max', 'yearly')
         assert nuc_max_year == nuc_test_max_year
         assert nuc_max_val == nuc_test_max_val
 
     def test_extrema_minimum_year(self, testdata):
-        nuc_test_min_year, nuc_test_min_val = '1972', 0.60
+        nuc_test_min_year, nuc_test_min_val = pd.Period('1972', 'Y'), 0.60
         nuc = Energy('nuclear', data=testdata)
         nuc_min_year, nuc_min_val = nuc.extrema('min', 'yearly')
         assert nuc_min_year == nuc_test_min_year

@@ -18,3 +18,6 @@ def check_if_method(instance, name):
         flag = False
     return flag
 
+def get_period_freqstr(period):
+    """Get the period `freqstr` attribute from a Period object."""
+    return period.freqstr

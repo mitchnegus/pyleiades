@@ -1,7 +1,9 @@
 import pandas as pd
 from .utils.load_data import load_dataset
-from .utils.eia_codes import name_to_code, date_to_code
+from .utils.code_conversion import parse_input_date, EIA_CODES
+from .utils.inspection import get_period_freqstr
 
+EIA_ENERGIES = list(EIA_CODES.values())
 
 class Energy:
     """
@@ -43,17 +45,18 @@ class Energy:
 
     def __init__(self, energy_type, data=None,
                  stat_type='consumption', data_date=None):
-        self.energy_type = energy_type
+        if energy_type.lower() not in EIA_ENERGIES:
+            raise ValueError(f"Energy '{energy_type}' was not found in the EIA "
+                             f"dataset. Available energies are: {EIA_ENERGIES}")
+        self.energy_type = energy_type.lower()
         self.stat_type = stat_type
-        # Determine energy code from energy source name
-        energy_code = name_to_code(energy_type)
 
         # Use default dataset if dataset argument is omitted
         if data is None:
             data = load_dataset(dataset_date=data_date, dataset_type=stat_type)
 
         # Isolate this energy's data, separate frequencies, and format the data
-        self.energy_data = self._isolate_energy(energy_code, data)
+        self.energy_data = self._isolate_energy(data)
         self.monthly_data, self.yearly_data = self._sep_freqs(self.energy_data)
 
         self._freq_errmsg = ('Frequency "{}" is not compatible with this data; '
@@ -61,14 +64,12 @@ class Energy:
         self._extr_errmsg = ('Input "{}" is not recognized as an extrema; '
                              'try "max" or "min"')
 
-    def _isolate_energy(self, energy_code, data):
+    def _isolate_energy(self, data):
         """
         Isolate one type of energy in the given dataset.
 
         Parameters
         ––––––––––
-        energy_code : int
-            The energy code corresponding to the energy source to be selected.
         data : DataFrame
             The dataset containing all energy values across energy sources.
 
@@ -78,8 +79,8 @@ class Energy:
             A trimmed version of the original dataset, now with only the
             selected energy source. The energy code column is removed.
         """
-        energy_data = data[data.energy_code == energy_code]
-        return energy_data[['date_code', 'value']]
+        energy_data = data[data.energy_type == self.energy_type]
+        return energy_data[['date', 'value']]
 
     @staticmethod
     def _sep_freqs(data):
@@ -99,14 +100,12 @@ class Energy:
             A subset of the data with the energy values reported yearly.
         """
         # Separate monthly and yearly totals
-        monthly_data = data[data.date_code.str[-2:] != '13'].copy()
-        yearly_data = data[data.date_code.str[-2:] == '13'].copy()
+        monthly_data = data[data.date.map(get_period_freqstr) == 'M'].copy()
+        yearly_data = data[data.date.map(get_period_freqstr) == 'A-DEC'].copy()
         # Index the dataframes by the date
         for df in monthly_data, yearly_data:
-            df.rename(index=str, columns={'date_code': 'date'}, inplace=True)
             df.set_index('date', inplace=True);
         # Remove date code '13' from end of yearly dates
-        yearly_data.index = yearly_data.index.str.slice(stop=4)
         return monthly_data, yearly_data
 
     @staticmethod
@@ -131,13 +130,11 @@ class Energy:
         if start_date is None:
             start_date = data.index.min()
         else:
-            start_date = date_to_code(start_date)
-            start_date = start_date[:len(data.index[0])]
+            start_date = parse_input_date(start_date)
         if end_date is None:
             end_date = data.index.max()
         else:
-            end_date = date_to_code(end_date)
-            end_date = end_date[:len(data.index[0])]
+            end_date = parse_input_date(end_date)
 
         # Adjust dataset boundaries 
         half_bounded_data = data[data.index >= start_date]
