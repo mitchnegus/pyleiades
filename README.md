@@ -84,16 +84,15 @@ The resulting `renewables` object stores the complete consumption history within
 
 ```
 >>> renewables.energy_data
-     date_code      value
-6220    194913   2.973984
-6221    195013   2.977718
-6222    195113   2.958464
-6223    195213   2.940181
+        date      value
+6220    1949   2.973984
+6221    1950   2.977718
+6222    1951   2.958464
+6223    1952   2.940181
 ...
 ```
 
-The `date_code` column gives the reporting date (in the format `YYYYMM`, where the month code 13 indicates a yearly total) and the `value` column gives the consumption amounts (in QBTU) for each date. 
-In the example above, the first four entries of the `energy_data` dataframe are the renewable energy yearly consumption totals for 1949 through 1952.
+The `date` column gives the reporting date (in the format `YYYY` for full year totals or `YYYY-MM` for monthly totals) and the `value` column gives the consumption amounts (in QBTU) for each date. 
 
 Energy consumption values are the default, however the `Energy` objects can also be used to access production, import and export statistics.
 The type of statistic can be selected using the `stat_type` keyword argument.
@@ -101,11 +100,11 @@ The type of statistic can be selected using the `stat_type` keyword argument.
 ```
 >>> renewables = Energy('renewable', stat_type='production')
 >>> renewables.energy_data
-     date_code     value
-6220    194913  1.549262
-6221    195013  1.562307
-6222    195113  1.534669
-6223    195213  1.474369
+        date     value
+6220    1949  1.549262
+6221    1950  1.562307
+6222    1951  1.534669
+6223    1952  1.474369
 ```
 
 Perhaps more interesting than the complete history, however, are more sophisticated features of the data, like interval specific totals and extremes.
@@ -114,27 +113,27 @@ Using the `totals` method of an `Energy` object allows the data to be totaled at
 
 ```
 >>> renewables.totals('monthly')
-           value
-  date
-197301  0.403981
-197302  0.360900
-197303  0.400161
-197304  0.380470
+            value
+   date
+1973-01  0.403981
+1973-02  0.360900
+1973-03  0.400161
+1973-04  0.380470
 ```
 
 Notice that here the monthly data only goes back as far as 1973 (though the `energy_data` attribute showed yearly data for renewable energy dating back to 1949). 
-By default, the `totals` method selects the entire range of available data. 
+By default, the `totals` method selects the entire range of available data, though what is available on a monthly vs. yearly basis might be different. 
 This  behavior can be overriden by providing start and end dates for some interval as keyword arguments.
 To only get monthly renewable energy data from 2000 to 2010, this would be:
 
 ```
->>> renewables.totals(freq='monthly', start_date='200001', end_date='200912')
-           value
-  date
-200001  0.505523
-200002  0.498993
-200003  0.558474
-200004  0.567147
+>>> renewables.totals(freq='monthly', start_date='2000-01', end_date='2009-12')
+            value
+   date
+2000-01  0.505523
+2000-02  0.498993
+2000-03  0.558474
+2000-04  0.567147
 ```
 
 To get extremes over a dataset interval, use the `maxima` or `minima` methods.
@@ -150,13 +149,15 @@ visual = Visual(['coal', 'nuclear', 'renewable'])
 ```
 
 This visual object's methods can then be used to generate any of a variety of visuals. 
-The syntax is again similar to that of the `Energy` object, however it includes a subject argument corresponding to a method of the `Energy` object.
-Here's an example that generates a line graph of energy totals:
+
+To generate a linegraph of energy totals, use the `linegraph` method.
+The syntax is again similar to that of the `Energy` object's `totals` method.
+Here's an example:
 
 ```
-visual.linegraph(subject='totals', freq='monthly', start_date='1970')
+visual.linegraph(freq='monthly', start_date='1970')
 ```
 
-![visual comparing coal, nuclear, and renewable energy consumption since 1970](pyleiades/fig/demo-plot.png)
+![line graph comparing coal, nuclear, and renewable energy consumption since 1970](pyleiades/fig/demo-plot.png)
 
 Run the very simple installed script `pyleiades-demo.py` to see the package in action.
