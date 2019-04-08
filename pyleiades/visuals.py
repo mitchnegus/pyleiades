@@ -4,6 +4,8 @@ from matplotlib import pyplot as plt
 from pyleiades.energies import Energy
 from pyleiades.utils import inspection
 
+sns.set()
+
 class Visual:
     """
     Create visuals based on energy data.
@@ -125,33 +127,6 @@ class Visual:
             interval = 10
         elif freq == 'monthly':
             interval = 120
-        xticks, xticklabels = configure_tickmarks(dates, interval)
-        ax.set_xticks(xticks)
-        ax.set_xticklabels(xticklabels)
+        ax.set_xticks(range(0, len(dates), interval))
+        ax.set_xticklabels(dates[::interval])
         return ax
-
-def configure_tickmarks(labels, interval):
-    """
-    Given labels and a set interval, generate tickmarks and ticklabels.
-
-    Parameters
-    ––––––––––
-    labels : list
-        The complete list of tickmark labels.
-    interval : int
-        The step size to use between tickmarks.
-
-    Returns
-    –––––––
-    ticks : sequence
-        A sequence of values to use as tickmarks.
-    ticklabels : sequence
-        A sequence of values to use as tickmark labels.
-    """
-    labels = list(labels)
-    ticks = range(0, len(labels), interval)
-    if len(labels[0]) == 6:
-        labels = [f'{_[-2:]}/{_[:-2]}' for _ in labels]
-    ticklabels = labels[::interval]
-    return ticks, ticklabels
-

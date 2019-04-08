@@ -136,6 +136,10 @@ class Energy:
         else:
             end_date = parse_input_date(end_date)
 
+        # Ensure that frequencies match
+        data_freq = data.index.freqstr
+        start_date = start_date.asfreq(data_freq, how='START')
+        end_date = end_date.asfreq(data_freq, how='END')
         # Adjust dataset boundaries 
         half_bounded_data = data[data.index >= start_date]
         bounded_data = half_bounded_data[half_bounded_data.index <= end_date]

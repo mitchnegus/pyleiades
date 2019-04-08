@@ -1,6 +1,7 @@
 import pytest
 import pandas as pd
 from pyleiades.utils.code_conversion import code_to_name as ctn
+from pyleiades.utils.code_conversion import code_to_period as ctp
 from pyleiades.utils.code_conversion import parse_input_date as parser
 
 class TestCTN:
@@ -11,6 +12,18 @@ class TestCTN:
     def test_invalid_entry(self):
         with pytest.raises(KeyError):
             ctn('test')
+
+class TestCTP:
+
+    def test_yearly_code(self):
+        assert ctp('202013') == pd.Period('2020', 'Y')
+
+    def test_monthly_code(self):
+        assert ctp('202001') == pd.Period('202001', 'M')
+
+    def test_invalid_code(self):
+        with pytest.raises(ValueError):
+            ctp('test24')
 
 class TestDateParser:
 
